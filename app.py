@@ -20,8 +20,6 @@ from cryptography.fernet import Fernet
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Service account JSON — env var FIREBASE_CREDENTIALS me path do
-# ya FIREBASE_CREDENTIALS_JSON me JSON string
 _cred_path = os.environ.get("FIREBASE_CREDENTIALS", "")
 _cred_json = os.environ.get("FIREBASE_CREDENTIALS_JSON", "")
 
@@ -30,18 +28,22 @@ if _cred_json:
 elif _cred_path and os.path.isfile(_cred_path):
     cred = credentials.Certificate(_cred_path)
 else:
-    # fallback: try same dir as script
     _default = os.path.join(os.path.dirname(os.path.abspath(__file__)), "serviceAccount.json")
     if os.path.isfile(_default):
         cred = credentials.Certificate(_default)
     else:
-        raise RuntimeError("Firebase credentials not found. Set FIREBASE_CREDENTIALS env to serviceAccount.json path")
+        # Vercel error handling (taaki crash na ho)
+        print("WARNING: Firebase credentials not found!")
+        cred = None
 
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+if cred and not firebase_admin._apps:
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+else:
+    db = None
 
-USERS_COL = "fampay_users"     # doc id = api_key
-ORDERS_COL = "fampay_orders"   # doc id = order_id
+USERS_COL = "fampay_users"
+ORDERS_COL = "fampay_orders"
 
 # ============================================================
 # CONFIG
@@ -81,12 +83,14 @@ FAMPAY_SENDER_HINTS = [
 # FIRESTORE HELPERS
 # ============================================================
 def fs_save_user(api_key, data):
+    if not db: return
     try:
         db.collection(USERS_COL).document(api_key).set(data)
     except Exception as e:
         print("[fs_save_user error]", e)
 
 def fs_get_user(api_key):
+    if not db: return None
     try:
         doc = db.collection(USERS_COL).document(api_key).get()
         return doc.to_dict() if doc.exists else None
@@ -95,12 +99,14 @@ def fs_get_user(api_key):
         return None
 
 def fs_save_order(order_id, data):
+    if not db: return
     try:
         db.collection(ORDERS_COL).document(order_id).set(data)
     except Exception as e:
         print("[fs_save_order error]", e)
 
 def fs_get_order(order_id):
+    if not db: return None
     try:
         doc = db.collection(ORDERS_COL).document(order_id).get()
         return doc.to_dict() if doc.exists else None
@@ -109,6 +115,7 @@ def fs_get_order(order_id):
         return None
 
 def fs_list_user_orders(api_key, limit=100):
+    if not db: return []
     try:
         q = (db.collection(ORDERS_COL)
              .where("owner", "==", api_key)
@@ -117,7 +124,6 @@ def fs_list_user_orders(api_key, limit=100):
         return [d.to_dict() for d in q.stream()]
     except Exception as e:
         print("[fs_list_user_orders error]", e)
-        # fallback without order_by (if index not ready)
         try:
             q = db.collection(ORDERS_COL).where("owner", "==", api_key).limit(limit)
             rows = [d.to_dict() for d in q.stream()]
@@ -128,6 +134,7 @@ def fs_list_user_orders(api_key, limit=100):
             return []
 
 def fs_user_stats(api_key):
+    if not db: return {"total_orders": 0, "paid_count": 0, "pending_count": 0, "expired_count": 0, "total_received": 0}
     try:
         rows = fs_list_user_orders(api_key, limit=500)
         paid = [r for r in rows if r.get("status") == "paid"]
@@ -143,8 +150,7 @@ def fs_user_stats(api_key):
         }
     except Exception as e:
         print("[fs_user_stats error]", e)
-        return {"total_orders": 0, "paid_count": 0, "pending_count": 0,
-                "expired_count": 0, "total_received": 0}
+        return {"total_orders": 0, "paid_count": 0, "pending_count": 0, "expired_count": 0, "total_received": 0}
 
 # ============================================================
 # ENCRYPTION
@@ -339,12 +345,10 @@ def fetch_fampay_emails(user_cfg):
     return {"emails": results, "debug": debug}
 
 def verify_order_against_mailbox(order, user_cfg):
-    """Verify a single order against user's mailbox. Saves to Firestore on success."""
     scan = fetch_fampay_emails(user_cfg)
     emails, debug = scan["emails"], scan["debug"]
     tp = amount_in_paise(order.get("payable_amount") or order.get("amount"))
 
-    # Fetch other pending orders (same user, same amount) from Firestore
     try:
         q = (db.collection(ORDERS_COL)
              .where("owner", "==", order.get("owner"))
@@ -395,7 +399,16 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self): self._handle("GET")
     def do_POST(self): self._handle("POST")
 
+    # === Yahan Error Handling Add Ki Hai ===
     def _handle(self, method):
+        try:
+            self._process_request(method)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self._json({"status": "error", "message": "Server error: " + str(e)}, 500)
+
+    def _process_request(self, method):
         parsed = urlparse(self.path)
         q = {k.strip().lower(): v[0].strip() for k, v in parse_qs(parsed.query).items()}
         raw = int(self.headers.get("Content-Length", "0") or "0")
@@ -420,7 +433,6 @@ class handler(BaseHTTPRequestHandler):
             return self._json({"status": "ok", "mode": "multi_user",
                                "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})
 
-        # ---------- REGISTER ----------
         if action == "register":
             name = (body.get("name") or q.get("name") or "").strip()
             upi = (body.get("upi_id") or q.get("upi_id") or "").strip()
@@ -446,7 +458,6 @@ class handler(BaseHTTPRequestHandler):
                 "message": "API key generated. Keep it safe!",
             }, 201)
 
-        # ---------- AUTH ----------
         api_key = (self.headers.get("X-API-Key")
                    or q.get("api_key") or q.get("apikey") or q.get("key")
                    or body.get("api_key") or body.get("apikey") or body.get("key") or "").strip()
@@ -458,11 +469,9 @@ class handler(BaseHTTPRequestHandler):
             return self._json({"status": "error", "code": "INVALID_API_KEY",
                                "message": "Valid API key required. Register at /register"}, 401)
 
-        # ---------- DASHBOARD ----------
         if action == "dashboard":
             stats = fs_user_stats(api_key)
             orders = fs_list_user_orders(api_key, limit=200)
-            # remove sensitive fields before sending
             for o in orders:
                 o.pop("owner", None)
             return self._json({
@@ -486,7 +495,6 @@ class handler(BaseHTTPRequestHandler):
                 o.pop("owner", None)
             return self._json({"status": "success", "orders": orders})
 
-        # ---------- CHECK / VERIFY ----------
         if action in ("check", "verify"):
             oid = (q.get("order_id") or body.get("order_id") or q.get("id") or "").strip()
             if not oid:
@@ -511,7 +519,6 @@ class handler(BaseHTTPRequestHandler):
                 "debug": vdbg,
             })
 
-        # ---------- CREATE ----------
         try: amount = round(float(body.get("amount") or q.get("amount") or 0), 2)
         except: amount = 0.0
         if amount < 1.0:
