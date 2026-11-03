@@ -91,26 +91,17 @@ input:focus{
   box-shadow:0 0 0 4px rgba(91,140,255,.14);
 }
 input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
-.note{
-  font-size:11px;color:var(--warn);margin-top:7px;
-  display:flex;align-items:flex-start;gap:6px;line-height:1.5;
-}
+.note{font-size:11px;color:var(--warn);margin-top:7px;display:flex;align-items:flex-start;gap:6px;line-height:1.5;}
 .btn{
-  width:100%;padding:14px;
-  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--primary2));
   color:#fff;border:none;border-radius:12px;font-weight:600;font-size:14px;
   cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);
-  position:relative;overflow:hidden;
-  box-shadow:0 8px 24px rgba(91,140,255,.35);letter-spacing:.01em;
+  position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(91,140,255,.35);letter-spacing:.01em;
 }
 .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 30px rgba(91,140,255,.5)}
 .btn:active:not(:disabled){transform:translateY(0)}
 .btn:disabled{background:linear-gradient(135deg,#3a4a68,#4b3f68);cursor:not-allowed;box-shadow:none;opacity:.7}
-.btn.loading::after{
-  content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;
-  margin:-9px 0 0 -9px;border:2px solid rgba(255,255,255,.3);
-  border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;
-}
+.btn.loading::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;}
 .btn.loading span{opacity:0}
 .hidden{display:none!important}
 .key-box{
@@ -140,35 +131,15 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
   box-shadow:0 6px 18px rgba(16,217,160,.3);
 }
 .copy-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(16,217,160,.45)}
-.result-box{
-  margin-top:20px;padding:20px;background:rgba(7,11,20,.55);
-  border-radius:16px;border:1px solid var(--border);animation:fadeSlide .4s ease-out;
-}
+.result-box{margin-top:20px;padding:20px;background:rgba(7,11,20,.55);border-radius:16px;border:1px solid var(--border);animation:fadeSlide .4s ease-out;}
 .qr-container{text-align:center;margin-bottom:18px}
-.qr-img{
-  width:100%;max-width:220px;border-radius:14px;border:6px solid #fff;
-  box-shadow:0 10px 30px rgba(0,0,0,.5);background:#fff;
-}
-.detail-row{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:10px;font-size:12.5px;
-  border-bottom:1px dashed rgba(99,152,255,.12);padding-bottom:9px;gap:12px;
-}
+.qr-img{width:100%;max-width:220px;border-radius:14px;border:6px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.5);background:#fff;}
+.detail-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:12.5px;border-bottom:1px dashed rgba(99,152,255,.12);padding-bottom:9px;gap:12px;}
 .detail-row:last-of-type{border-bottom:none}
 .detail-row strong{color:var(--muted);font-weight:500;flex-shrink:0}
-.detail-row span{
-  color:#a5c4ff;font-weight:600;text-align:right;word-break:break-all;
-  font-family:'JetBrains Mono',monospace;font-size:11.5px;
-}
-.status-badge{
-  display:inline-flex;align-items:center;gap:6px;padding:7px 14px;
-  border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.03em;
-}
-.status-badge::before{
-  content:"";width:6px;height:6px;border-radius:50%;
-  background:currentColor;box-shadow:0 0 8px currentColor;
-  animation:pulse 1.8s ease-in-out infinite;
-}
+.detail-row span{color:#a5c4ff;font-weight:600;text-align:right;word-break:break-all;font-family:'JetBrains Mono',monospace;font-size:11.5px;}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.03em;}
+.status-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:pulse 1.8s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .status-pending{background:rgba(251,191,36,.15);color:var(--warn);border:1px solid rgba(251,191,36,.35)}
 .status-paid{background:rgba(16,217,160,.15);color:var(--success);border:1px solid rgba(16,217,160,.35)}
@@ -177,83 +148,56 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 .check-section{margin-top:16px;display:flex;gap:10px}
 .btn-check{background:linear-gradient(135deg,var(--success),#059669);box-shadow:0 8px 24px rgba(16,217,160,.35)}
 .btn-check:hover:not(:disabled){box-shadow:0 12px 30px rgba(16,217,160,.5)}
-.btn-secondary{
-  background:rgba(99,152,255,.12);border:1px solid var(--border);color:#a5c4ff;
-  box-shadow:none;flex:0 0 auto;width:auto;padding:14px 20px;
-}
+.btn-secondary{background:rgba(99,152,255,.12);border:1px solid var(--border);color:#a5c4ff;box-shadow:none;flex:0 0 auto;width:auto;padding:14px 20px;}
 .btn-secondary:hover:not(:disabled){background:rgba(99,152,255,.2);box-shadow:none;transform:translateY(-2px)}
-.api-docs{
-  margin-top:20px;font-size:11.5px;color:var(--muted);
-  background:rgba(7,11,20,.55);padding:16px 18px;border-radius:14px;
-  border-left:3px solid var(--primary);line-height:1.9;
-}
+.api-docs{margin-top:20px;font-size:11.5px;color:var(--muted);background:rgba(7,11,20,.55);padding:16px 18px;border-radius:14px;border-left:3px solid var(--primary);line-height:1.9;}
 .api-docs strong{color:#a5c4ff;display:block;margin-bottom:6px;font-size:12px}
-.api-docs code{
-  background:rgba(91,140,255,.12);padding:2px 7px;border-radius:5px;
-  color:#93b4ff;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;
-}
-.toast{
-  position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);
-  background:rgba(20,30,52,.95);backdrop-filter:blur(20px);
-  border:1px solid var(--border);padding:14px 22px;border-radius:12px;
-  font-size:13px;font-weight:500;z-index:9999;
-  transition:transform .4s cubic-bezier(.4,1.4,.6,1);
-  box-shadow:0 16px 40px rgba(0,0,0,.5);max-width:90vw;
-}
+.api-docs code{background:rgba(91,140,255,.12);padding:2px 7px;border-radius:5px;color:#93b4ff;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;}
+
+/* Dashboard Premium Styles */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:linear-gradient(145deg, rgba(20,30,52,.8), rgba(13,20,36,.8));border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;position:relative;overflow:hidden;}
+.stat-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:var(--primary);opacity:.5;}
+.stat-card.revenue::before{background:var(--success)}
+.stat-card.pending::before{background:var(--warn)}
+.stat-card.expired::before{background:var(--danger)}
+.stat-card .stat-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;font-weight:700}
+.stat-card .stat-value{font-size:22px;font-weight:800;color:var(--text)}
+.stat-card.paid .stat-value{color:var(--success)}
+.stat-card.pending .stat-value{color:var(--warn)}
+.stat-card.expired .stat-value{color:var(--danger)}
+.stat-card.revenue .stat-value{color:var(--success)}
+.user-info-card{background:linear-gradient(135deg,rgba(91,140,255,.15),rgba(139,92,246,.15));border:1px solid rgba(139,92,246,.3);border-radius:16px;padding:20px;margin-bottom:24px;display:flex;align-items:center;gap:16px;}
+.user-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary2));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;box-shadow:0 4px 15px rgba(91,140,255,.4);}
+.user-details{flex:1;}
+.user-details h3{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
+.user-details .info-row{display:flex;gap:12px;font-size:11.5px;color:var(--muted);margin-top:3px;}
+.user-details .info-row span{font-family:'JetBrains Mono',monospace;color:#a5c4ff;}
+
+.orders-list{margin-top:16px;}
+.order-row{background:linear-gradient(145deg, rgba(20,30,52,.6), rgba(13,20,36,.6));border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:all .25s;}
+.order-row:hover{border-color:rgba(91,140,255,.4);background:rgba(20,30,52,.9);transform:translateY(-2px);}
+.order-icon{width:40px;height:40px;border-radius:10px;background:rgba(91,140,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--primary);flex-shrink:0;}
+.order-info{flex:1;min-width:0;}
+.order-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:#93b4ff;margin-bottom:4px;word-break:break-all;}
+.order-meta{font-size:11px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;}
+.order-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.order-amt{font-size:16px;font-weight:800;color:var(--text);}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;background:rgba(7,11,20,.4);border-radius:16px;border:1px dashed var(--border);}
+.empty-state .icon{font-size:44px;margin-bottom:12px;opacity:.5;}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);background:rgba(20,30,52,.95);backdrop-filter:blur(20px);border:1px solid var(--border);padding:14px 22px;border-radius:12px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.4,1.4,.6,1);box-shadow:0 16px 40px rgba(0,0,0,.5);max-width:90vw;}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.success{border-color:rgba(16,217,160,.4);color:var(--success)}
 .toast.error{border-color:rgba(244,63,94,.4);color:var(--danger)}
 .toast.info{border-color:rgba(91,140,255,.4);color:#93b4ff}
 
-/* Dashboard styles */
-.stats-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:12px;margin-bottom:20px;
-}
-.stat-card{
-  background:rgba(7,11,20,.6);border:1px solid var(--border);
-  border-radius:14px;padding:16px;text-align:center;
-}
-.stat-card .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-weight:600}
-.stat-card .stat-value{font-size:22px;font-weight:800;color:var(--text)}
-.stat-card.paid .stat-value{color:var(--success)}
-.stat-card.pending .stat-value{color:var(--warn)}
-.stat-card.expired .stat-value{color:var(--danger)}
-.stat-card.revenue .stat-value{color:#93b4ff}
-
-.orders-list{margin-top:16px}
-.order-row{
-  background:rgba(7,11,20,.5);border:1px solid var(--border);
-  border-radius:12px;padding:14px 16px;margin-bottom:10px;
-  display:flex;justify-content:space-between;align-items:center;gap:12px;
-  transition:all .2s;
-}
-.order-row:hover{border-color:rgba(99,152,255,.35);background:rgba(7,11,20,.75)}
-.order-info{flex:1;min-width:0}
-.order-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:#93b4ff;margin-bottom:4px;word-break:break-all}
-.order-meta{font-size:11px;color:var(--muted)}
-.order-right{text-align:right;flex-shrink:0}
-.order-amt{font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px}
-.empty-state{
-  text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;
-}
-.empty-state .icon{font-size:44px;margin-bottom:12px;opacity:.5}
-
-.user-info-card{
-  background:linear-gradient(135deg,rgba(91,140,255,.1),rgba(139,92,246,.1));
-  border:1px solid var(--border);border-radius:14px;padding:18px;
-  margin-bottom:20px;
-}
-.user-info-card h3{font-size:15px;margin-bottom:10px;color:#a5c4ff}
-.user-info-card .info-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;gap:10px}
-.user-info-card .info-row span:first-child{color:var(--muted)}
-.user-info-card .info-row span:last-child{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;word-break:break-all;text-align:right}
-
 @media(max-width:600px){
   .tabs{flex-wrap:wrap}
   .tab{font-size:12px;padding:9px 6px}
-  .order-row{flex-direction:column;align-items:flex-start}
-  .order-right{text-align:left;width:100%;display:flex;justify-content:space-between;align-items:center}
+  .order-row{flex-direction:column;align-items:flex-start;}
+  .order-right{text-align:left;width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;border-top:1px dashed var(--border);padding-top:10px;margin-top:8px;}
 }
 </style>
 </head>
@@ -302,7 +246,7 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
         <div class="key-text" id="generatedKey"></div>
         <button class="copy-btn" onclick="copyApiKey()">📋 Copy to Clipboard</button>
         <div class="note" style="justify-content:center;margin-top:14px">
-          Use as <code style="background:rgba(91,140,255,.15);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;color:#93b4ff">X-API-Key</code> header
+          Is key ko sambhal kar rakhe. Ab aapko dobara login nahi karna padega.
         </div>
       </div>
     </div>
@@ -312,6 +256,7 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
       <div class="form-group">
         <label>API Key <span class="req">*</span></label>
         <div class="input-wrap"><input id="apiKey" class="mono" placeholder="fp_live_..." autocomplete="off"></div>
+        <div class="note" style="color:var(--success);">✅ API Key automatically save ho jayegi.</div>
       </div>
       <div class="form-group">
         <label>Amount (₹) <span class="req">*</span></label>
@@ -339,18 +284,23 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 
     <!-- DASHBOARD -->
     <div id="dashboardTab" class="panel hidden">
-      <div class="form-group">
-        <label>API Key <span class="req">*</span></label>
-        <div class="input-wrap"><input id="dashApiKey" class="mono" placeholder="fp_live_..." autocomplete="off"></div>
+      <div id="dashboardLogin">
+        <div class="form-group">
+          <label>Enter API Key to view Dashboard <span class="req">*</span></label>
+          <div class="input-wrap"><input id="dashApiKey" class="mono" placeholder="fp_live_..." autocomplete="off"></div>
+        </div>
+        <button class="btn" onclick="loadDashboard()" id="dashBtn"><span>View Dashboard</span></button>
       </div>
-      <button class="btn" onclick="loadDashboard()" id="dashBtn"><span>Load My Dashboard</span></button>
 
-      <div id="dashboardContent" class="hidden" style="margin-top:22px">
+      <div id="dashboardContent" class="hidden">
         <div class="user-info-card">
-          <h3 id="userNameDisplay">👤</h3>
-          <div class="info-row"><span>UPI ID</span><span id="userUpiDisplay"></span></div>
-          <div class="info-row"><span>Gmail</span><span id="userGmailDisplay"></span></div>
-          <div class="info-row"><span>Joined</span><span id="userJoinedDisplay"></span></div>
+          <div class="user-avatar" id="userAvatar">👤</div>
+          <div class="user-details">
+            <h3 id="userNameDisplay">Loading...</h3>
+            <div class="info-row"><span>UPI: <span id="userUpiDisplay"></span></span></div>
+            <div class="info-row"><span>Gmail: <span id="userGmailDisplay"></span></span></div>
+          </div>
+          <button onclick="logoutDashboard()" class="btn-secondary" style="padding:8px 12px;font-size:11px;border-radius:8px;border-color:var(--danger);color:var(--danger);">Logout</button>
         </div>
 
         <div class="stats-grid">
@@ -359,7 +309,7 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
             <div class="stat-value" id="statRevenue">₹0</div>
           </div>
           <div class="stat-card paid">
-            <div class="stat-label">Paid</div>
+            <div class="stat-label">Paid Orders</div>
             <div class="stat-value" id="statPaid">0</div>
           </div>
           <div class="stat-card pending">
@@ -373,8 +323,8 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <h3 style="font-size:14px;color:#a5c4ff">💳 Payment History</h3>
-          <button onclick="loadDashboard()" class="btn btn-secondary" style="padding:8px 14px;font-size:12px;width:auto">🔄 Refresh</button>
+          <h3 style="font-size:14px;color:#a5c4ff">💳 Transaction History</h3>
+          <button onclick="loadDashboard(true)" class="btn btn-secondary" style="padding:6px 12px;font-size:11px;width:auto">🔄 Refresh</button>
         </div>
         <div class="orders-list" id="ordersList"></div>
       </div>
@@ -382,11 +332,10 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
   </div>
 
   <div class="api-docs">
-    <strong>API Endpoints</strong>
-    <code>POST /api/register</code> — name, upi_id, gmail_email, gmail_app_password<br>
-    <code>POST /api/create?amount=100</code> — X-API-Key header<br>
-    <code>GET /api/check?order_id=...</code> — X-API-Key header<br>
-    <code>GET /api/dashboard</code> — X-API-Key header (stats + history)
+    <strong>API Endpoints (Use Headers, Not URL)</strong>
+    <code>POST /api/create?amount=100</code> + Header: <code>X-API-Key: fp_live_...</code><br>
+    <code>GET /api/check?order_id=...</code> + Header: <code>X-API-Key: fp_live_...</code><br>
+    <code>GET /api/dashboard</code> + Header: <code>X-API-Key: fp_live_...</code>
   </div>
 </div>
 
@@ -394,8 +343,19 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 
 <script>
 let currentOrderId = "", currentApiKey = "";
-// Yahan API Base set kiya gaya hai Vercel routing ke liye
 const API_BASE = "/api";
+
+// On Load: Check if API key is saved in localStorage
+window.addEventListener('DOMContentLoaded', () => {
+  const savedKey = localStorage.getItem('fampay_api_key');
+  if (savedKey) {
+    document.getElementById('apiKey').value = savedKey;
+    document.getElementById('dashApiKey').value = savedKey;
+    // Auto switch to dashboard if key exists
+    switchTab('dashboard');
+    loadDashboard(true);
+  }
+});
 
 function toast(msg, type = "info") {
   const t = document.getElementById('toast');
@@ -408,18 +368,30 @@ function toast(msg, type = "info") {
 function switchTab(t) {
   document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(x => x.classList.add('hidden'));
+  
   if (t === 'register') {
     document.querySelectorAll('.tab')[0].classList.add('active');
     document.getElementById('registerTab').classList.remove('hidden');
   } else if (t === 'payment') {
     document.querySelectorAll('.tab')[1].classList.add('active');
     document.getElementById('paymentTab').classList.remove('hidden');
+    // Auto-fill key if exists
+    const savedKey = localStorage.getItem('fampay_api_key');
+    if (savedKey && !document.getElementById('apiKey').value) {
+      document.getElementById('apiKey').value = savedKey;
+    }
   } else if (t === 'dashboard') {
     document.querySelectorAll('.tab')[2].classList.add('active');
     document.getElementById('dashboardTab').classList.remove('hidden');
-    const savedKey = document.getElementById('apiKey').value.trim();
-    if (savedKey && !document.getElementById('dashApiKey').value) {
+    
+    const savedKey = localStorage.getItem('fampay_api_key');
+    if (savedKey) {
+      document.getElementById('dashboardLogin').classList.add('hidden');
+      document.getElementById('dashboardContent').classList.remove('hidden');
       document.getElementById('dashApiKey').value = savedKey;
+    } else {
+      document.getElementById('dashboardLogin').classList.remove('hidden');
+      document.getElementById('dashboardContent').classList.add('hidden');
     }
   }
 }
@@ -439,7 +411,7 @@ async function registerUser() {
   if (pw.length !== 16) return toast("App Password 16 characters ka hona chahiye", "error");
 
   const btn = document.getElementById('regBtn');
-  setLoading(btn, true, "Verifying Gmail...");
+  setLoading(btn, true, "Verifying Gmail & Saving...");
 
   try {
     const res = await fetch(`${API_BASE}/register`, {
@@ -451,13 +423,17 @@ async function registerUser() {
     if (data.status === 'success') {
       document.getElementById('generatedKey').innerText = data.api_key;
       document.getElementById('apiKeyResult').classList.remove('hidden');
+      
+      // Save to LocalStorage
+      localStorage.setItem('fampay_api_key', data.api_key);
+      
       document.getElementById('apiKey').value = data.api_key;
       document.getElementById('dashApiKey').value = data.api_key;
-      toast("✅ API Key ready! Ab Test Payment tab me use karo", "success");
-      setTimeout(() => switchTab('payment'), 900);
+      
+      toast("✅ Account Created! API Key Saved.", "success");
+      setTimeout(() => switchTab('dashboard'), 1000);
     } else {
       toast("❌ " + (data.message || "Failed"), "error");
-      if (data.debug) console.warn("Debug:", data.debug);
     }
   } catch (e) {
     toast("❌ " + e.message, "error");
@@ -479,11 +455,15 @@ async function createOrder() {
   if (!apiKey) return toast("API Key daalo!", "error");
   if (amount < 1) return toast("Minimum ₹1", "error");
 
+  // Auto-save if not saved
+  localStorage.setItem('fampay_api_key', apiKey);
   currentApiKey = apiKey;
+  
   const btn = document.getElementById('createBtn');
   setLoading(btn, true, "Generating...");
 
   try {
+    // API Key passed in HEADER, not URL
     const res = await fetch(`${API_BASE}/create?amount=${amount}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey }
@@ -515,7 +495,7 @@ async function checkStatus() {
   const btn = document.getElementById('checkBtn');
   setLoading(btn, true, "Checking...");
   try {
-    const res = await fetch(`${API_BASE}/check?order_id=${currentOrderId}&api_key=${currentApiKey}`, {
+    const res = await fetch(`${API_BASE}/check?order_id=${currentOrderId}`, {
       headers: { 'X-API-Key': currentApiKey }
     });
     const data = await res.json();
@@ -546,12 +526,18 @@ function resetForm() {
   document.getElementById('amount').value = "10";
 }
 
-async function loadDashboard() {
-  const apiKey = document.getElementById('dashApiKey').value.trim();
+// ---------- DASHBOARD ----------
+async function loadDashboard(isAuto = false) {
+  let apiKey = document.getElementById('dashApiKey').value.trim();
+  
+  if (!apiKey) {
+    apiKey = localStorage.getItem('fampay_api_key');
+  }
+  
   if (!apiKey) return toast("API Key daalo!", "error");
 
   const btn = document.getElementById('dashBtn');
-  setLoading(btn, true, "Loading...");
+  if (btn) setLoading(btn, true, "Loading...");
 
   try {
     const res = await fetch(`${API_BASE}/dashboard`, {
@@ -560,10 +546,17 @@ async function loadDashboard() {
     const data = await res.json();
 
     if (data.status === 'success') {
-      document.getElementById('userNameDisplay').textContent = "👤 " + (data.user.name || "User");
+      // Save key on successful login
+      localStorage.setItem('fampay_api_key', apiKey);
+      
+      // UI Update
+      document.getElementById('dashboardLogin').classList.add('hidden');
+      document.getElementById('dashboardContent').classList.remove('hidden');
+      
+      document.getElementById('userAvatar').textContent = (data.user.name || "U").charAt(0).toUpperCase();
+      document.getElementById('userNameDisplay').textContent = data.user.name || "User";
       document.getElementById('userUpiDisplay').textContent = data.user.upi_id || "—";
       document.getElementById('userGmailDisplay').textContent = data.user.gmail_email || "—";
-      document.getElementById('userJoinedDisplay').textContent = formatDate(data.user.joined);
 
       const s = data.stats;
       document.getElementById('statRevenue').textContent = "₹" + (s.total_received || 0);
@@ -574,17 +567,23 @@ async function loadDashboard() {
       const list = document.getElementById('ordersList');
       list.innerHTML = '';
       if (!data.orders || data.orders.length === 0) {
-        list.innerHTML = '<div class="empty-state"><div class="icon">📭</div>Abhi koi order nahi hai.<br>Test Payment tab me QR banao aur payment karo!</div>';
+        list.innerHTML = '<div class="empty-state"><div class="icon">📭</div>Abhi koi transaction nahi hai.<br>Test Payment tab me QR banao aur payment karo!</div>';
       } else {
         data.orders.forEach(o => {
           const row = document.createElement('div');
           row.className = 'order-row';
           const statusCls = o.status === 'paid' ? 'status-paid' : (o.status === 'expired' ? 'status-expired' : 'status-pending');
           const statusTxt = (o.status || 'pending').toUpperCase();
+          const icon = o.status === 'paid' ? '✅' : (o.status === 'expired' ? '❌' : '⏳');
+          
           row.innerHTML = `
+            <div class="order-icon">${icon}</div>
             <div class="order-info">
               <div class="order-id">${o.id}</div>
-              <div class="order-meta">${formatDate(o.created_at)} ${o.utr ? '· UTR: ' + o.utr : ''}</div>
+              <div class="order-meta">
+                <span>${formatDate(o.created_at)}</span>
+                ${o.utr ? `<span>UTR: ${o.utr}</span>` : ''}
+              </div>
             </div>
             <div class="order-right">
               <div class="order-amt">₹${o.amount}</div>
@@ -594,17 +593,25 @@ async function loadDashboard() {
           list.appendChild(row);
         });
       }
-
-      document.getElementById('dashboardContent').classList.remove('hidden');
-      toast("✅ Dashboard loaded", "success");
+      if(!isAuto) toast("✅ Dashboard Updated", "success");
     } else {
-      toast("❌ " + (data.message || "Failed"), "error");
+      toast("❌ " + (data.message || "Invalid API Key"), "error");
+      if(!isAuto) logoutDashboard();
     }
   } catch (e) {
     toast("❌ " + e.message, "error");
   } finally {
-    setLoading(btn, false, "Load My Dashboard");
+    if (btn) setLoading(btn, false, "View Dashboard");
   }
+}
+
+function logoutDashboard() {
+  localStorage.removeItem('fampay_api_key');
+  document.getElementById('dashApiKey').value = "";
+  document.getElementById('apiKey').value = "";
+  document.getElementById('dashboardContent').classList.add('hidden');
+  document.getElementById('dashboardLogin').classList.remove('hidden');
+  toast("Logged out successfully", "info");
 }
 
 function formatDate(iso) {
