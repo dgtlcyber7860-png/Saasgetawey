@@ -1,1 +1,2 @@
-PyJWT==2.8.0
+firebase-admin
+cryptography
