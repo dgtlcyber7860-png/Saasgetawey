@@ -3,7 +3,6 @@
 """
 Multi-User FamPay UPI + Gmail IMAP Verification API
 + Firebase Firestore (users + orders persist)
-+ User Dashboard (payments history)
 """
 
 import os, re, json, time, random, imaplib, email, base64
@@ -23,23 +22,27 @@ from firebase_admin import credentials, firestore
 _cred_path = os.environ.get("FIREBASE_CREDENTIALS", "")
 _cred_json = os.environ.get("FIREBASE_CREDENTIALS_JSON", "")
 
-if _cred_json:
-    cred = credentials.Certificate(json.loads(_cred_json))
-elif _cred_path and os.path.isfile(_cred_path):
-    cred = credentials.Certificate(_cred_path)
-else:
-    _default = os.path.join(os.path.dirname(os.path.abspath(__file__)), "serviceAccount.json")
-    if os.path.isfile(_default):
-        cred = credentials.Certificate(_default)
+try:
+    if _cred_json:
+        # JSON minified hona chahiye Vercel pe
+        cred = credentials.Certificate(json.loads(_cred_json))
+    elif _cred_path and os.path.isfile(_cred_path):
+        cred = credentials.Certificate(_cred_path)
     else:
-        # Vercel error handling (taaki crash na ho)
-        print("WARNING: Firebase credentials not found!")
-        cred = None
+        _default = os.path.join(os.path.dirname(os.path.abspath(__file__)), "serviceAccount.json")
+        if os.path.isfile(_default):
+            cred = credentials.Certificate(_default)
+        else:
+            cred = None
+            print("WARNING: Firebase credentials not found!")
 
-if cred and not firebase_admin._apps:
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
-else:
+    if cred and not firebase_admin._apps:
+        firebase_admin.initialize_app(cred)
+        db = firestore.client()
+    else:
+        db = None
+except Exception as e:
+    print("FIREBASE INIT ERROR:", e)
     db = None
 
 USERS_COL = "fampay_users"
@@ -83,11 +86,12 @@ FAMPAY_SENDER_HINTS = [
 # FIRESTORE HELPERS
 # ============================================================
 def fs_save_user(api_key, data):
-    if not db: return
+    if not db: return False, "Firebase DB not connected. Check FIREBASE_CREDENTIALS_JSON."
     try:
         db.collection(USERS_COL).document(api_key).set(data)
+        return True, "Success"
     except Exception as e:
-        print("[fs_save_user error]", e)
+        return False, str(e)
 
 def fs_get_user(api_key):
     if not db: return None
@@ -95,7 +99,6 @@ def fs_get_user(api_key):
         doc = db.collection(USERS_COL).document(api_key).get()
         return doc.to_dict() if doc.exists else None
     except Exception as e:
-        print("[fs_get_user error]", e)
         return None
 
 def fs_save_order(order_id, data):
@@ -111,7 +114,6 @@ def fs_get_order(order_id):
         doc = db.collection(ORDERS_COL).document(order_id).get()
         return doc.to_dict() if doc.exists else None
     except Exception as e:
-        print("[fs_get_order error]", e)
         return None
 
 def fs_list_user_orders(api_key, limit=100):
@@ -123,14 +125,12 @@ def fs_list_user_orders(api_key, limit=100):
              .limit(limit))
         return [d.to_dict() for d in q.stream()]
     except Exception as e:
-        print("[fs_list_user_orders error]", e)
         try:
             q = db.collection(ORDERS_COL).where("owner", "==", api_key).limit(limit)
             rows = [d.to_dict() for d in q.stream()]
             rows.sort(key=lambda r: r.get("created_ts", 0), reverse=True)
             return rows
         except Exception as e2:
-            print("[fs_list_user_orders fallback error]", e2)
             return []
 
 def fs_user_stats(api_key):
@@ -149,7 +149,6 @@ def fs_user_stats(api_key):
             "total_received": round(total_paid_amount, 2),
         }
     except Exception as e:
-        print("[fs_user_stats error]", e)
         return {"total_orders": 0, "paid_count": 0, "pending_count": 0, "expired_count": 0, "total_received": 0}
 
 # ============================================================
@@ -167,7 +166,7 @@ def generate_api_key():
     return "fp_live_" + raw
 
 # ============================================================
-# USER MANAGEMENT (Firestore backed)
+# USER MANAGEMENT
 # ============================================================
 def register_user(name, upi_id, gmail_email, gmail_app_password):
     api_key = generate_api_key()
@@ -179,7 +178,9 @@ def register_user(name, upi_id, gmail_email, gmail_app_password):
         "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "created_ts": int(time.time()),
     }
-    fs_save_user(api_key, user_doc)
+    success, msg = fs_save_user(api_key, user_doc)
+    if not success:
+        raise Exception(msg)
     return api_key
 
 def get_user_by_api_key(api_key):
@@ -355,7 +356,6 @@ def verify_order_against_mailbox(order, user_cfg):
              .where("status", "==", "pending"))
         all_pending = [d.to_dict() for d in q.stream()]
     except Exception as e:
-        print("[verify pending fetch error]", e)
         all_pending = []
 
     pending_same = [o for o in all_pending
@@ -399,7 +399,6 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self): self._handle("GET")
     def do_POST(self): self._handle("POST")
 
-    # === Yahan Error Handling Add Ki Hai ===
     def _handle(self, method):
         try:
             self._process_request(method)
@@ -448,7 +447,12 @@ class handler(BaseHTTPRequestHandler):
                     "message": "Gmail login failed. App Password sahi hai? 2FA on hai?",
                     "debug": scan["debug"]
                 }, 401)
-            api_key = register_user(name, upi, gmail, app_pw)
+            
+            try:
+                api_key = register_user(name, upi, gmail, app_pw)
+            except Exception as e:
+                return self._json({"status": "error", "message": "DB Save Failed: " + str(e)}, 500)
+
             return self._json({
                 "status": "success",
                 "api_key": api_key,
@@ -464,6 +468,7 @@ class handler(BaseHTTPRequestHandler):
         auth = self.headers.get("Authorization", "")
         if not api_key and auth.lower().startswith("bearer "):
             api_key = auth[7:].strip()
+        
         user_cfg = get_user_by_api_key(api_key)
         if not user_cfg:
             return self._json({"status": "error", "code": "INVALID_API_KEY",
