@@ -1,20 +1,32 @@
-
-# api/index.py — Vercel wrapper for existing handler
+# api/index.py
 import sys
 import os
+import json
 
-# Add parent dir to path so we can import app.py
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from app import handler
 
-from app import handler, CONFIG
-
-# Vercel Python runtime expects a WSGI-compatible callable
 def app(environ, start_response):
-    """
-    WSGI wrapper around BaseHTTPRequestHandler.
-    Isse tumhara existing handler Vercel pe kaam karega.
-    """
-    # Build a fake request object from WSGI environ
+    path = environ.get('PATH_INFO', '/')
+    
+    # Serve HTML UI
+    if path == '/' or path == '':
+        try:
+            root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            with open(os.path.join(root_dir, 'index.html'), 'rb') as f:
+                html_content = f.read()
+            start_response("200 OK", [("Content-Type", "text/html; charset=utf-8")])
+            return [html_content]
+        except Exception as e:
+            start_response("500 Internal Server Error", [("Content-Type", "text/plain")])
+            return [f"HTML Error: {str(e)}".encode()]
+
+    # Add /api back to path for Vercel routing
+    if not path.startswith('/api/'):
+        path = '/api' + path
+    environ['PATH_INFO'] = path
+
+    # Wrapper Class
     class FakeRequest:
         def __init__(self, environ):
             self.environ = environ
@@ -24,30 +36,13 @@ def app(environ, start_response):
                 self.path += '?' + environ['QUERY_STRING']
             self.headers = environ
             self.rfile = environ.get('wsgi.input')
-            self.wfile = None  # We'll capture response
+            self.wfile = None
             self.client_address = (environ.get('REMOTE_ADDR', '0.0.0.0'), 0)
             self.server = None
             self.request_version = 'HTTP/1.1'
 
-        def send_response(self, code, message=None):
-            self._status = code
-            self._message = message or ''
-
-        def send_header(self, keyword, value):
-            if not hasattr(self, '_headers'):
-                self._headers = []
-            self._headers.append((keyword, value))
-
-        def end_headers(self):
-            pass
-
-        def log_message(self, *args):
-            pass
-
-    # Create handler instance manually
     req = FakeRequest(environ)
-    
-    # Capture response by subclassing
+
     class CaptureHandler(handler):
         def __init__(self, request):
             self.request = request
@@ -63,27 +58,18 @@ def app(environ, start_response):
             self._status_code = 200
             self._response_headers = []
 
-        def send_response(self, code, message=None):
-            self._status_code = code
-
-        def send_header(self, keyword, value):
-            self._response_headers.append((keyword, value))
-
-        def end_headers(self):
-            pass
-
-        def wfile_write(self, data):
-            self._response_body += data
-
-        # Override _json to capture instead of write
+        def send_response(self, code, message=None): self._status_code = code
+        def send_header(self, keyword, value): self._response_headers.append((keyword, value))
+        def end_headers(self): pass
+        
         def _json(self, payload, status=200):
-            import json
             b = json.dumps(payload, ensure_ascii=False, default=str).encode()
             self._status_code = status
             self._response_headers = [
                 ("Content-Type", "application/json; charset=utf-8"),
                 ("Access-Control-Allow-Origin", "*"),
-                ("Content-Length", str(len(b))),
+                ("Access-Control-Allow-Methods", "GET, POST, OPTIONS"),
+                ("Access-Control-Allow-Headers", "Content-Type, X-API-Key, Authorization"),
             ]
             self._response_body = b
 
@@ -98,24 +84,23 @@ def app(environ, start_response):
 
     try:
         h = CaptureHandler(req)
-        if req.command == 'OPTIONS':
-            h.do_OPTIONS()
-        elif req.command == 'GET':
-            h.do_GET()
-        elif req.command == 'POST':
-            h.do_POST()
-        else:
-            h._json({"status": "error", "message": "Method not allowed"}, 405)
+        if req.command == 'OPTIONS': h.do_OPTIONS()
+        elif req.command == 'GET': h.do_GET()
+        elif req.command == 'POST': h.do_POST()
+        else: h._json({"status": "error", "message": "Method not allowed"}, 405)
 
-        status = f"{h._status_code} OK"
+        status_str = f"{h._status_code} OK"
+        if h._status_code == 400: status_str = "400 Bad Request"
+        elif h._status_code == 401: status_str = "401 Unauthorized"
+        elif h._status_code == 403: status_str = "403 Forbidden"
+        elif h._status_code == 404: status_str = "404 Not Found"
+        elif h._status_code == 500: status_str = "500 Internal Server Error"
+
         headers = h._response_headers + [("Content-Length", str(len(h._response_body)))]
-        start_response(status, headers)
+        start_response(status_str, headers)
         return [h._response_body]
+        
     except Exception as e:
-        import json
         error_body = json.dumps({"status": "error", "message": str(e)}).encode()
-        start_response("500 Internal Server Error", [
-            ("Content-Type", "application/json"),
-            ("Content-Length", str(len(error_body))),
-        ])
+        start_response("500 Internal Server Error", [("Content-Type", "application/json")])
         return [error_body]
