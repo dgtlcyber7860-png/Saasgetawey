@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Multi-User FamPay UPI + Gmail IMAP Verification API
++ Firebase Firestore
++ Admin Panel (Control API Keys & Expiry)
+"""
+
 import os, re, json, time, random, imaplib, email, base64
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
@@ -11,6 +17,9 @@ from cryptography.fernet import Fernet
 import firebase_admin
 from firebase_admin import credentials, firestore
 
+# ============================================================
+# CONFIG
+# ============================================================
 _cred_path = os.environ.get("FIREBASE_CREDENTIALS", "")
 _cred_json = os.environ.get("FIREBASE_CREDENTIALS_JSON", "")
 
@@ -25,6 +34,7 @@ try:
             cred = credentials.Certificate(_default)
         else:
             cred = None
+
     if cred and not firebase_admin._apps:
         firebase_admin.initialize_app(cred)
         db = firestore.client()
@@ -37,14 +47,12 @@ except Exception as e:
 USERS_COL = "fampay_users"
 ORDERS_COL = "fampay_orders"
 
-# ADMIN CREDENTIALS
-ADMIN_EMAIL = "shahid2005afridi@gmail.com"
-ADMIN_PASS = "Shahid7860@"
-
 _DEFAULT_DIR = os.path.dirname(os.path.abspath(__file__))
 _STORAGE_DIR = _DEFAULT_DIR if os.access(_DEFAULT_DIR, os.W_OK) else "/tmp"
 
 CONFIG = {
+    "admin_email": "shahid2005afridi@gmail.com",
+    "admin_password": "Shahid7860@",
     "encryption_key": os.environ.get("ENCRYPTION_KEY", ""),
     "expiry_minutes": int(os.environ.get("EXPIRY_MINUTES", "15")),
     "port": int(os.environ.get("PORT", "8080")),
@@ -64,17 +72,15 @@ def get_fernet():
         CONFIG["encryption_key"] = key
     return Fernet(key if isinstance(key, bytes) else key.encode())
 
-FAMPAY_SENDER_HINTS = [
-    "fampay", "famapp", "fam pay", "fam app", "yesfam", "yes bank",
-    "idfc", "upi", "received", "credited", "payment", "credit alert",
-    "ord_", "money received", "paid to you",
-]
+FAMPAY_SENDER_HINTS = ["fampay", "famapp", "fam pay", "fam app", "yesfam", "yes bank", "idfc", "upi", "received", "credited", "payment", "credit alert", "ord_", "money received", "paid to you"]
 
-# --- FIRESTORE HELPERS ---
+# ============================================================
+# FIRESTORE HELPERS
+# ============================================================
 def fs_save_user(api_key, data):
     if not db: return False, "Firebase DB not connected."
     try:
-        db.collection(USERS_COL).document(api_key).set(data, merge=True)
+        db.collection(USERS_COL).document(api_key).set(data)
         return True, "Success"
     except Exception as e:
         return False, str(e)
@@ -86,11 +92,28 @@ def fs_get_user(api_key):
         return doc.to_dict() if doc.exists else None
     except: return None
 
-def fs_list_all_users():
+def fs_get_all_users():
     if not db: return []
     try:
-        return [d.to_dict() for d in db.collection(USERS_COL).stream()]
+        users = db.collection(USERS_COL).stream()
+        res = []
+        for u in users:
+            d = u.to_dict()
+            d['api_key'] = u.id
+            res.append(d)
+        res.sort(key=lambda x: x.get("created_ts", 0), reverse=True)
+        return res
     except: return []
+
+def fs_update_user_status(api_key, status, expires_ts):
+    if not db: return False
+    try:
+        db.collection(USERS_COL).document(api_key).update({
+            "status": status,
+            "expires_ts": int(expires_ts)
+        })
+        return True
+    except: return False
 
 def fs_save_order(order_id, data):
     if not db: return
@@ -122,13 +145,18 @@ def fs_user_stats(api_key):
     try:
         rows = fs_list_user_orders(api_key, limit=500)
         paid = [r for r in rows if r.get("status") == "paid"]
-        pending = [r for r in rows if r.get("status") == "pending"]
-        expired = [r for r in rows if r.get("status") == "expired"]
-        total_paid_amount = sum(float(r.get("amount", 0)) for r in paid)
-        return {"total_orders": len(rows), "paid_count": len(paid), "pending_count": len(pending), "expired_count": len(expired), "total_received": round(total_paid_amount, 2)}
+        return {
+            "total_orders": len(rows),
+            "paid_count": len(paid),
+            "pending_count": len([r for r in rows if r.get("status") == "pending"]),
+            "expired_count": len([r for r in rows if r.get("status") == "expired"]),
+            "total_received": round(sum(float(r.get("amount", 0)) for r in paid), 2),
+        }
     except: return {"total_orders": 0, "paid_count": 0, "pending_count": 0, "expired_count": 0, "total_received": 0}
 
-# --- ENCRYPTION ---
+# ============================================================
+# ENCRYPTION & USER MANAGEMENT
+# ============================================================
 def encrypt_secret(val): return get_fernet().encrypt(val.encode("utf-8")).decode("utf-8")
 def decrypt_secret(val):
     try: return get_fernet().decrypt(val.encode("utf-8")).decode("utf-8")
@@ -138,34 +166,34 @@ def generate_api_key():
     raw = base64.urlsafe_b64encode(os.urandom(24)).decode().rstrip("=")
     return "fp_live_" + raw
 
-# --- USER MANAGEMENT ---
 def register_user(name, upi_id, gmail_email, gmail_app_password):
     api_key = generate_api_key()
+    now_ts = int(time.time())
+    # Default 30 days validity for new users
+    default_expiry = now_ts + (30 * 24 * 60 * 60)
+    
     user_doc = {
-        "api_key": api_key,
         "name": name,
         "upi_id": upi_id.strip(),
         "gmail_email": gmail_email.strip().lower(),
         "gmail_app_password_enc": encrypt_secret(re.sub(r"\s+", "", gmail_app_password)),
         "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "created_ts": int(time.time()),
-        "is_active": True,
-        "expires_ts": 0, # 0 means lifetime
+        "created_ts": now_ts,
+        "status": "active",
+        "expires_ts": default_expiry
     }
-    fs_save_user(api_key, user_doc)
+    success, msg = fs_save_user(api_key, user_doc)
+    if not success: raise Exception(msg)
     return api_key
 
-def get_user_by_api_key(api_key):
-    if not api_key: return None
-    return fs_get_user(api_key)
-
-# --- UPI ---
+# ============================================================
+# UPI & EMAIL PARSING
+# ============================================================
 def build_upi_link(upi_id, amount, merchant_name, order_id, reference):
     note = order_id or reference or "Payment"
     tr = reference or order_id or ""
     return f"upi://pay?pa={quote(upi_id)}&pn={quote(merchant_name or 'Merchant')}&am={amount:.2f}&cu=INR&tn={quote(note)}&tr={quote(tr)}"
 
-# --- EMAIL PARSING ---
 def looks_like_fampay(sender, subject, body_preview):
     h = f"{sender} {subject} {body_preview[:800]}".lower()
     return any(x in h for x in FAMPAY_SENDER_HINTS)
@@ -256,7 +284,7 @@ def matches_explicit_reference(mail, order):
 def fetch_fampay_emails(user_cfg):
     user = user_cfg["gmail_email"].strip().lower()
     pw = decrypt_secret(user_cfg["gmail_app_password_enc"])
-    debug = {"connected": False, "totalScanned": 0, "famMatched": 0, "error": None, "gmail": user}
+    debug = {"connected": False, "error": None, "gmail": user}
     results = []
     if not user or not pw:
         debug["error"] = "Missing Gmail credentials"
@@ -269,7 +297,6 @@ def fetch_fampay_emails(user_cfg):
         typ, data = imap.search(None, "ALL")
         ids = data[0].split() if (typ == "OK" and data and data[0]) else []
         newest = list(reversed(ids[-15:]))
-        debug["totalScanned"] = len(newest)
         for mid in newest:
             typ, md = imap.fetch(mid, "(BODY.PEEK[])")
             if typ != "OK" or not md or not md[0]: continue
@@ -282,7 +309,6 @@ def fetch_fampay_emails(user_cfg):
             except: rt = int(time.time())
             body = extract_message_body(msg)
             if looks_like_fampay(sender, subj, body):
-                debug["famMatched"] += 1
                 full = f"{subj}\n{body}"
                 amt = extract_amount(full)
                 utr = extract_utr(full)
@@ -292,9 +318,7 @@ def fetch_fampay_emails(user_cfg):
                     results.append({
                         "utr": utr or fmp, "fampayTxnId": fmp, "orderId": oid,
                         "amount": amt, "subject": subj, "from": sender.lower(),
-                        "received_ts": rt,
-                        "receivedAt": datetime.fromtimestamp(rt, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        "raw": body[:600],
+                        "received_ts": rt, "raw": body[:600],
                     })
             if len(results) >= 5: break
         imap.logout()
@@ -304,15 +328,13 @@ def fetch_fampay_emails(user_cfg):
 
 def verify_order_against_mailbox(order, user_cfg):
     scan = fetch_fampay_emails(user_cfg)
-    emails, debug = scan["emails"], scan["debug"]
+    emails = scan["emails"]
     tp = amount_in_paise(order.get("payable_amount") or order.get("amount"))
     try:
-        q = db.collection(ORDERS_COL).where("owner", "==", order.get("owner")).where("status", "==", "pending")
+        q = (db.collection(ORDERS_COL).where("owner", "==", order.get("owner")).where("status", "==", "pending"))
         all_pending = [d.to_dict() for d in q.stream()]
     except: all_pending = []
-
     pending_same = [o for o in all_pending if amount_in_paise(o.get("payable_amount") or o.get("amount")) == tp]
-
     for mail in emails:
         matched = matches_explicit_reference(mail, order)
         if not matched and len(pending_same) == 1 and pending_same[0].get("id") == order.get("id"):
@@ -323,8 +345,8 @@ def verify_order_against_mailbox(order, user_cfg):
             order["paid_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
             order["paid_ts"] = int(time.time())
             fs_save_order(order["id"], order)
-            return {"paid": True, "debug": debug}
-    return {"paid": False, "debug": debug}
+            return {"paid": True}
+    return {"paid": False}
 
 # ============================================================
 # HTTP SERVER
@@ -336,7 +358,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-API-Key, Authorization, X-Admin-Email, X-Admin-Password")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-API-Key, Authorization")
         self.send_header("Content-Length", str(len(b)))
         self.end_headers()
         self.wfile.write(b)
@@ -345,7 +367,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-API-Key, Authorization, X-Admin-Email, X-Admin-Password")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-API-Key, Authorization")
         self.end_headers()
 
     def do_GET(self): self._handle("GET")
@@ -354,8 +376,7 @@ class handler(BaseHTTPRequestHandler):
     def _handle(self, method):
         try: self._process_request(method)
         except Exception as e:
-            import traceback
-            traceback.print_exc()
+            import traceback; traceback.print_exc()
             self._json({"status": "error", "message": "Server error: " + str(e)}, 500)
 
     def _process_request(self, method):
@@ -371,50 +392,50 @@ class handler(BaseHTTPRequestHandler):
         if not action:
             if "/register" in parsed.path: action = "register"
             elif "/check" in parsed.path: action = "check"
+            elif "/health" in parsed.path: action = "health"
             elif "/dashboard" in parsed.path: action = "dashboard"
-            elif "/admin_login" in parsed.path: action = "admin_login"
-            elif "/admin_users" in parsed.path: action = "admin_users"
-            elif "/admin_update" in parsed.path: action = "admin_update"
+            elif "/admin" in parsed.path: action = "admin"
             elif q.get("order_id") or body.get("order_id"): action = "check"
             else: action = "create"
 
-        # --- ADMIN ROUTES ---
-        if action.startswith("admin_"):
-            req_email = self.headers.get("X-Admin-Email", "").strip()
-            req_pass = self.headers.get("X-Admin-Password", "").strip()
+        if action == "health":
+            return self._json({"status": "ok"})
 
-            if req_email != ADMIN_EMAIL or req_pass != ADMIN_PASS:
+        # ================= ADMIN ROUTES =================
+        if action == "admin":
+            admin_action = q.get("admin_action") or body.get("admin_action")
+            
+            if admin_action == "login":
+                email = body.get("email", "")
+                pw = body.get("password", "")
+                if email == CONFIG["admin_email"] and pw == CONFIG["admin_password"]:
+                    return self._json({"status": "success", "token": "admin_master_token"})
                 return self._json({"status": "error", "message": "Invalid Admin Credentials"}, 401)
 
-            if action == "admin_login":
-                return self._json({"status": "success", "message": "Logged in"})
-
-            if action == "admin_users":
-                users = fs_list_all_users()
+            if admin_action == "get_users":
+                users = fs_get_all_users()
+                # Clean sensitive data
+                for u in users:
+                    u.pop("gmail_app_password_enc", None)
                 return self._json({"status": "success", "users": users})
 
-            if action == "admin_update":
+            if admin_action == "update_user":
                 target_key = body.get("api_key")
-                if not target_key: return self._json({"status": "error", "message": "API key required"}, 400)
-                user = fs_get_user(target_key)
-                if not user: return self._json({"status": "error", "message": "User not found"}, 404)
+                new_status = body.get("status")
+                new_expires = body.get("expires_ts")
+                if fs_update_user_status(target_key, new_status, new_expires):
+                    return self._json({"status": "success", "message": "User updated"})
+                return self._json({"status": "error", "message": "Update failed"}, 500)
 
-                if "is_active" in body: user["is_active"] = bool(body["is_active"])
-                if "expires_ts" in body: user["expires_ts"] = int(body["expires_ts"])
-                
-                fs_save_user(target_key, user)
-                return self._json({"status": "success", "message": "User updated", "user": user})
-
-            return self._json({"status": "error", "message": "Unknown admin action"}, 400)
-
-        # --- PUBLIC ROUTES ---
+        # ================= USER ROUTES =================
         if action == "register":
-            name = (body.get("name") or "").strip()
-            upi = (body.get("upi_id") or "").strip()
-            gmail = (body.get("gmail_email") or "").strip()
-            app_pw = (body.get("gmail_app_password") or "").strip()
+            name = (body.get("name") or q.get("name") or "").strip()
+            upi = (body.get("upi_id") or q.get("upi_id") or "").strip()
+            gmail = (body.get("gmail_email") or q.get("gmail_email") or "").strip()
+            app_pw = (body.get("gmail_app_password") or q.get("gmail_app_password") or "").strip()
             if not name or not upi or not gmail or not app_pw:
                 return self._json({"status": "error", "message": "All fields required"}, 400)
+            
             test_cfg = {"gmail_email": gmail, "gmail_app_password_enc": encrypt_secret(re.sub(r"\s+", "", app_pw))}
             scan = fetch_fampay_emails(test_cfg)
             if not scan["debug"]["connected"]:
@@ -422,41 +443,36 @@ class handler(BaseHTTPRequestHandler):
             try:
                 api_key = register_user(name, upi, gmail, app_pw)
             except Exception as e:
-                return self._json({"status": "error", "message": "DB Save Failed: " + str(e)}, 500)
-            return self._json({"status": "success", "api_key": api_key}, 201)
+                return self._json({"status": "error", "message": "DB Error: " + str(e)}, 500)
+
+            return self._json({"status": "success", "api_key": api_key, "message": "Generated!"}, 201)
 
         api_key = (self.headers.get("X-API-Key") or q.get("api_key") or body.get("api_key") or "").strip()
         auth = self.headers.get("Authorization", "")
         if not api_key and auth.lower().startswith("bearer "): api_key = auth[7:].strip()
         
-        user_cfg = get_user_by_api_key(api_key)
+        user_cfg = fs_get_user(api_key)
         if not user_cfg:
-            return self._json({"status": "error", "code": "INVALID_API_KEY", "message": "Valid API key required."}, 401)
-
-        # Check if user is blocked or expired
-        if user_cfg.get("is_active") is False:
-            return self._json({"status": "error", "message": "Account blocked by Admin."}, 403)
+            return self._json({"status": "error", "code": "INVALID_API_KEY", "message": "Invalid API Key"}, 401)
             
-        expires_ts = user_cfg.get("expires_ts", 0)
-        if expires_ts > 0 and int(time.time()) > expires_ts:
-            return self._json({"status": "error", "message": "API Key expired. Contact Admin."}, 403)
+        # 🔥 EXPIRY & STATUS CHECK 🔥
+        if user_cfg.get("status") == "blocked":
+            return self._json({"status": "error", "code": "BLOCKED", "message": "Your account is blocked by Admin."}, 403)
+            
+        if user_cfg.get("expires_ts") and int(time.time()) > int(user_cfg["expires_ts"]):
+            return self._json({"status": "error", "code": "EXPIRED", "message": "Your API Key has expired. Contact Admin."}, 403)
 
         if action == "dashboard":
-            stats = fs_user_stats(api_key)
-            orders = fs_list_user_orders(api_key, limit=200)
-            for o in orders: o.pop("owner", None)
             return self._json({
                 "status": "success",
                 "user": {
                     "name": user_cfg.get("name"),
                     "upi_id": user_cfg.get("upi_id"),
                     "gmail_email": user_cfg.get("gmail_email"),
-                    "joined": user_cfg.get("created_at"),
-                    "expires_ts": expires_ts,
-                    "is_active": user_cfg.get("is_active")
+                    "expires_ts": user_cfg.get("expires_ts")
                 },
-                "stats": stats,
-                "orders": orders,
+                "stats": fs_user_stats(api_key),
+                "orders": [ {k:v for k,v in o.items() if k != 'owner'} for o in fs_list_user_orders(api_key) ],
             })
 
         if action in ("check", "verify"):
@@ -469,30 +485,28 @@ class handler(BaseHTTPRequestHandler):
             if order.get("status") == "pending" and int(time.time()) > int(order.get("expires_ts", 0)):
                 order["status"] = "expired"
                 fs_save_order(oid, order)
-            vdbg = None
+                
             if order.get("status") == "pending":
-                res = verify_order_against_mailbox(order, user_cfg)
-                vdbg = res.get("debug")
+                verify_order_against_mailbox(order, user_cfg)
+                
             return self._json({
                 "status": order["status"], "order_id": order["id"],
                 "amount": float(order["amount"]), "payable_amount": float(order["payable_amount"]),
-                "provider": "fampay", "utr": order.get("utr"),
-                "time": order.get("created_at"), "paid_at": order.get("paid_at"),
-                "debug": vdbg,
+                "utr": order.get("utr"), "paid_at": order.get("paid_at"),
             })
 
+        # Create Order
         try: amount = round(float(body.get("amount") or q.get("amount") or 0), 2)
         except: amount = 0.0
-        if amount < 1.0: return self._json({"status": "error", "message": "Invalid amount. Min ₹1.00"}, 400)
+        if amount < 1.0: return self._json({"status": "error", "message": "Invalid amount."}, 400)
 
         now = int(time.time())
         exp = now + CONFIG["expiry_minutes"] * 60
-        paise = int(round(amount * 100))
         ref = str(random.randint(100000000000, 999999999999))
-        oid = f"ord_{now}_{paise}_{ref}"
+        oid = f"ord_{now}_{int(amount*100)}_{ref}"
         upi_link = build_upi_link(user_cfg["upi_id"], amount, user_cfg.get("name", "Merchant"), oid, ref)
         qr = f"https://quickchart.io/qr?text={quote(upi_link)}&size=300"
-        
+
         new_order = {
             "id": oid, "owner": api_key, "amount": amount, "payable_amount": amount,
             "provider": "fampay", "upi_id": user_cfg["upi_id"],
@@ -503,17 +517,17 @@ class handler(BaseHTTPRequestHandler):
             "expires_at": datetime.fromtimestamp(exp, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "paid_at": None, "paid_ts": None,
             "user_name": user_cfg.get("name"),
-            "gmail_email": user_cfg.get("gmail_email"),
         }
         fs_save_order(oid, new_order)
         return self._json({
             "status": "success", "order_id": oid, "amount": amount,
-            "payable_amount": amount, "provider": "fampay",
-            "upi_id": user_cfg["upi_id"], "upi_link": upi_link, "qr_url": qr,
-            "expires_at": new_order["expires_at"],
+            "payable_amount": amount, "upi_id": user_cfg["upi_id"],
+            "upi_link": upi_link, "qr_url": qr, "expires_at": new_order["expires_at"],
         }, 201)
+
 
 FamPayAPIHandler = handler
 
 if __name__ == "__main__":
+    print(f"[FamPay Multi-User API] http://0.0.0.0:{CONFIG['port']}")
     HTTPServer(("0.0.0.0", CONFIG["port"]), handler).serve_forever()
