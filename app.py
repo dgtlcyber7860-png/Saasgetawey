@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Multi-User FamPay UPI + Gmail IMAP Verification API
-+ Firebase Firestore (users + orders persist)
-"""
-
 import os, re, json, time, random, imaplib, email, base64
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
@@ -13,9 +8,6 @@ from urllib.parse import urlencode, quote, urlparse, parse_qs
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from cryptography.fernet import Fernet
 
-# ============================================================
-# FIREBASE ADMIN
-# ============================================================
 import firebase_admin
 from firebase_admin import credentials, firestore
 
@@ -24,7 +16,6 @@ _cred_json = os.environ.get("FIREBASE_CREDENTIALS_JSON", "")
 
 try:
     if _cred_json:
-        # JSON minified hona chahiye Vercel pe
         cred = credentials.Certificate(json.loads(_cred_json))
     elif _cred_path and os.path.isfile(_cred_path):
         cred = credentials.Certificate(_cred_path)
@@ -48,9 +39,6 @@ except Exception as e:
 USERS_COL = "fampay_users"
 ORDERS_COL = "fampay_orders"
 
-# ============================================================
-# CONFIG
-# ============================================================
 _DEFAULT_DIR = os.path.dirname(os.path.abspath(__file__))
 _STORAGE_DIR = _DEFAULT_DIR if os.access(_DEFAULT_DIR, os.W_OK) else "/tmp"
 
@@ -82,9 +70,6 @@ FAMPAY_SENDER_HINTS = [
     "ord_", "money received", "paid to you",
 ]
 
-# ============================================================
-# FIRESTORE HELPERS
-# ============================================================
 def fs_save_user(api_key, data):
     if not db: return False, "Firebase DB not connected. Check FIREBASE_CREDENTIALS_JSON."
     try:
@@ -151,9 +136,6 @@ def fs_user_stats(api_key):
     except Exception as e:
         return {"total_orders": 0, "paid_count": 0, "pending_count": 0, "expired_count": 0, "total_received": 0}
 
-# ============================================================
-# ENCRYPTION
-# ============================================================
 def encrypt_secret(val):
     return get_fernet().encrypt(val.encode("utf-8")).decode("utf-8")
 
@@ -165,9 +147,6 @@ def generate_api_key():
     raw = base64.urlsafe_b64encode(os.urandom(24)).decode().rstrip("=")
     return "fp_live_" + raw
 
-# ============================================================
-# USER MANAGEMENT
-# ============================================================
 def register_user(name, upi_id, gmail_email, gmail_app_password):
     api_key = generate_api_key()
     user_doc = {
@@ -187,9 +166,6 @@ def get_user_by_api_key(api_key):
     if not api_key: return None
     return fs_get_user(api_key)
 
-# ============================================================
-# UPI QR
-# ============================================================
 def build_upi_link(upi_id, amount, merchant_name, order_id, reference):
     note = order_id or reference or "Payment"
     tr = reference or order_id or ""
@@ -200,9 +176,6 @@ def build_upi_link(upi_id, amount, merchant_name, order_id, reference):
         f"&tn={quote(note)}&tr={quote(tr)}"
     )
 
-# ============================================================
-# EMAIL PARSING
-# ============================================================
 def looks_like_fampay(sender, subject, body_preview):
     h = f"{sender} {subject} {body_preview[:800]}".lower()
     return any(x in h for x in FAMPAY_SENDER_HINTS)
@@ -374,9 +347,6 @@ def verify_order_against_mailbox(order, user_cfg):
             return {"paid": True, "debug": debug}
     return {"paid": False, "debug": debug}
 
-# ============================================================
-# HTTP SERVER
-# ============================================================
 class handler(BaseHTTPRequestHandler):
     def _json(self, payload, status=200):
         b = json.dumps(payload, ensure_ascii=False, default=str).encode()
