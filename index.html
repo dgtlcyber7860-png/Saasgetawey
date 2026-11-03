@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FamPay API · Secure UPI Gateway</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+:root{
+  --bg:#070b14;--bg2:#0d1424;--card:rgba(20,30,52,.65);
+  --border:rgba(99,152,255,.14);--primary:#5b8cff;--primary2:#8b5cf6;
+  --success:#10d9a0;--warn:#fbbf24;--danger:#f43f5e;
+  --text:#e8eefc;--muted:#8ba0c4;
+}
+html,body{min-height:100%}
+body{
+  background:var(--bg);color:var(--text);
+  display:flex;justify-content:center;align-items:flex-start;
+  min-height:100vh;padding:32px 16px;
+  background-image:
+    radial-gradient(circle at 15% 0%,rgba(91,140,255,.18),transparent 45%),
+    radial-gradient(circle at 85% 100%,rgba(139,92,246,.18),transparent 45%),
+    radial-gradient(circle at 50% 50%,rgba(16,217,160,.06),transparent 60%);
+  background-attachment:fixed;position:relative;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:-50%;z-index:-1;
+  background:conic-gradient(from 0deg,transparent,rgba(91,140,255,.06),transparent 30%);
+  animation:spin 22s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.container{width:100%;max-width:680px;position:relative;z-index:1}
+.container.wide{max-width:980px}
+.brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px}
+.brand-logo{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 8px 24px rgba(91,140,255,.35);
+}
+.brand h1{
+  font-size:24px;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(135deg,#fff,#93b4ff 60%,#c4a4ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.header{text-align:center;margin-bottom:28px}
+.header p{font-size:13px;color:var(--muted);margin-top:2px}
+.card{
+  background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:20px;padding:8px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.04);
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 30%);
+  border-radius:20px;
+}
+.tabs{
+  display:flex;padding:6px;gap:4px;background:rgba(7,11,20,.6);
+  border-radius:14px;border:1px solid var(--border);margin-bottom:20px;position:relative;
+}
+.tab{
+  flex:1;text-align:center;padding:11px 8px;cursor:pointer;border-radius:10px;
+  font-size:13px;font-weight:600;color:var(--muted);
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.tab:hover{color:var(--text)}
+.tab.active{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;box-shadow:0 6px 20px rgba(91,140,255,.4);
+}
+.panel{padding:20px 18px 22px}
+.form-group{margin-bottom:16px}
+label{
+  display:flex;align-items:center;gap:6px;margin-bottom:7px;
+  font-size:12px;font-weight:600;color:#c3d2ee;letter-spacing:.01em;
+}
+label .req{color:var(--danger);font-size:11px}
+.input-wrap{position:relative}
+input{
+  width:100%;padding:13px 14px;border:1.5px solid rgba(99,152,255,.16);
+  background:rgba(7,11,20,.7);color:var(--text);border-radius:11px;
+  outline:none;font-size:14px;transition:all .25s;font-family:inherit;
+}
+input::placeholder{color:#4a5f80}
+input:focus{
+  border-color:var(--primary);background:rgba(7,11,20,.95);
+  box-shadow:0 0 0 4px rgba(91,140,255,.14);
+}
+input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
+.note{
+  font-size:11px;color:var(--warn);margin-top:7px;
+  display:flex;align-items:flex-start;gap:6px;line-height:1.5;
+}
+.btn{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;border:none;border-radius:12px;font-weight:600;font-size:14px;
+  cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+  box-shadow:0 8px 24px rgba(91,140,255,.35);letter-spacing:.01em;
+}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 30px rgba(91,140,255,.5)}
+.btn:active:not(:disabled){transform:translateY(0)}
+.btn:disabled{background:linear-gradient(135deg,#3a4a68,#4b3f68);cursor:not-allowed;box-shadow:none;opacity:.7}
+.btn.loading::after{
+  content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;
+  margin:-9px 0 0 -9px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;
+}
+.btn.loading span{opacity:0}
+.hidden{display:none!important}
+.key-box{
+  background:linear-gradient(135deg,rgba(16,217,160,.08),rgba(91,140,255,.08));
+  border:1.5px dashed rgba(16,217,160,.45);border-radius:14px;
+  padding:22px;text-align:center;margin-top:20px;animation:fadeSlide .5s ease-out;
+}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.key-box .check-icon{
+  width:52px;height:52px;margin:0 auto 12px;border-radius:50%;
+  background:linear-gradient(135deg,var(--success),#059669);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  box-shadow:0 8px 24px rgba(16,217,160,.4);animation:pop .5s cubic-bezier(.4,1.6,.6,1);
+}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.key-box h3{color:var(--success);margin-bottom:14px;font-size:15px;font-weight:700}
+.key-text{
+  font-family:'JetBrains Mono',monospace;font-size:13px;color:#93b4ff;
+  background:rgba(7,11,20,.8);padding:14px 12px;border-radius:10px;
+  word-break:break-all;margin-bottom:14px;font-weight:600;
+  border:1px solid var(--border);line-height:1.5;user-select:all;
+}
+.copy-btn{
+  background:linear-gradient(135deg,var(--success),#059669);color:#fff;
+  border:none;padding:10px 24px;border-radius:9px;cursor:pointer;
+  font-weight:600;font-size:13px;transition:all .2s;
+  box-shadow:0 6px 18px rgba(16,217,160,.3);
+}
+.copy-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(16,217,160,.45)}
+.result-box{
+  margin-top:20px;padding:20px;background:rgba(7,11,20,.55);
+  border-radius:16px;border:1px solid var(--border);animation:fadeSlide .4s ease-out;
+}
+.qr-container{text-align:center;margin-bottom:18px}
+.qr-img{
+  width:100%;max-width:220px;border-radius:14px;border:6px solid #fff;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);background:#fff;
+}
+.detail-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;font-size:12.5px;
+  border-bottom:1px dashed rgba(99,152,255,.12);padding-bottom:9px;gap:12px;
+}
+.detail-row:last-of-type{border-bottom:none}
+.detail-row strong{color:var(--muted);font-weight:500;flex-shrink:0}
+.detail-row span{
+  color:#a5c4ff;font-weight:600;text-align:right;word-break:break-all;
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;
+}
+.status-badge{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 14px;
+  border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.03em;
+}
+.status-badge::before{
+  content:"";width:6px;height:6px;border-radius:50%;
+  background:currentColor;box-shadow:0 0 8px currentColor;
+  animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.status-pending{background:rgba(251,191,36,.15);color:var(--warn);border:1px solid rgba(251,191,36,.35)}
+.status-paid{background:rgba(16,217,160,.15);color:var(--success);border:1px solid rgba(16,217,160,.35)}
+.status-expired{background:rgba(244,63,94,.15);color:var(--danger);border:1px solid rgba(244,63,94,.35)}
+.status-paid::before{animation:none}
+.check-section{margin-top:16px;display:flex;gap:10px}
+.btn-check{background:linear-gradient(135deg,var(--success),#059669);box-shadow:0 8px 24px rgba(16,217,160,.35)}
+.btn-check:hover:not(:disabled){box-shadow:0 12px 30px rgba(16,217,160,.5)}
+.btn-secondary{
+  background:rgba(99,152,255,.12);border:1px solid var(--border);color:#a5c4ff;
+  box-shadow:none;flex:0 0 auto;width:auto;padding:14px 20px;
+}
+.btn-secondary:hover:not(:disabled){background:rgba(99,152,255,.2);box-shadow:none;transform:translateY(-2px)}
+.api-docs{
+  margin-top:20px;font-size:11.5px;color:var(--muted);
+  background:rgba(7,11,20,.55);padding:16px 18px;border-radius:14px;
+  border-left:3px solid var(--primary);line-height:1.9;
+}
+.api-docs strong{color:#a5c4ff;display:block;margin-bottom:6px;font-size:12px}
+.api-docs code{
+  background:rgba(91,140,255,.12);padding:2px 7px;border-radius:5px;
+  color:#93b4ff;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;
+}
+.toast{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);
+  background:rgba(20,30,52,.95);backdrop-filter:blur(20px);
+  border:1px solid var(--border);padding:14px 22px;border-radius:12px;
+  font-size:13px;font-weight:500;z-index:9999;
+  transition:transform .4s cubic-bezier(.4,1.4,.6,1);
+  box-shadow:0 16px 40px rgba(0,0,0,.5);max-width:90vw;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(16,217,160,.4);color:var(--success)}
+.toast.error{border-color:rgba(244,63,94,.4);color:var(--danger)}
+.toast.info{border-color:rgba(91,140,255,.4);color:#93b4ff}
+
+/* Dashboard styles */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-bottom:20px;
+}
+.stat-card{
+  background:rgba(7,11,20,.6);border:1px solid var(--border);
+  border-radius:14px;padding:16px;text-align:center;
+}
+.stat-card .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-weight:600}
+.stat-card .stat-value{font-size:22px;font-weight:800;color:var(--text)}
+.stat-card.paid .stat-value{color:var(--success)}
+.stat-card.pending .stat-value{color:var(--warn)}
+.stat-card.expired .stat-value{color:var(--danger)}
+.stat-card.revenue .stat-value{color:#93b4ff}
+
+.orders-list{margin-top:16px}
+.order-row{
+  background:rgba(7,11,20,.5);border:1px solid var(--border);
+  border-radius:12px;padding:14px 16px;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  transition:all .2s;
+}
+.order-row:hover{border-color:rgba(99,152,255,.35);background:rgba(7,11,20,.75)}
+.order-info{flex:1;min-width:0}
+.order-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:#93b4ff;margin-bottom:4px;word-break:break-all}
+.order-meta{font-size:11px;color:var(--muted)}
+.order-right{text-align:right;flex-shrink:0}
+.order-amt{font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px}
+.empty-state{
+  text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;
+}
+.empty-state .icon{font-size:44px;margin-bottom:12px;opacity:.5}
+
+.user-info-card{
+  background:linear-gradient(135deg,rgba(91,140,255,.1),rgba(139,92,246,.1));
+  border:1px solid var(--border);border-radius:14px;padding:18px;
+  margin-bottom:20px;
+}
+.user-info-card h3{font-size:15px;margin-bottom:10px;color:#a5c4ff}
+.user-info-card .info-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;gap:10px}
+.user-info-card .info-row span:first-child{color:var(--muted)}
+.user-info-card .info-row span:last-child{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;word-break:break-all;text-align:right}
+
+@media(max-width:600px){
+  .tabs{flex-wrap:wrap}
+  .tab{font-size:12px;padding:9px 6px}
+  .order-row{flex-direction:column;align-items:flex-start}
+  .order-right{text-align:left;width:100%;display:flex;justify-content:space-between;align-items:center}
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="header">
+    <div class="brand">
+      <div class="brand-logo">⚡</div>
+      <h1>FamPay Gateway</h1>
+    </div>
+    <p>Apna UPI + Gmail deke apna API key banao — 100% secure</p>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('register')">🔑 Register</div>
+      <div class="tab" onclick="switchTab('payment')">💳 Test Payment</div>
+      <div class="tab" onclick="switchTab('dashboard')">📊 Dashboard</div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerTab" class="panel">
+      <div class="form-group">
+        <label>Name / Business <span class="req">*</span></label>
+        <div class="input-wrap"><input id="userName" placeholder="Rahul Store" autocomplete="off"></div>
+      </div>
+      <div class="form-group">
+        <label>FamPay UPI ID <span class="req">*</span></label>
+        <div class="input-wrap"><input id="userUpi" placeholder="yourname@fam" autocomplete="off"></div>
+      </div>
+      <div class="form-group">
+        <label>Gmail Address <span class="req">*</span></label>
+        <div class="input-wrap"><input id="userGmail" type="email" placeholder="you@gmail.com" autocomplete="off"></div>
+      </div>
+      <div class="form-group">
+        <label>Gmail App Password <span class="req">*</span></label>
+        <div class="input-wrap"><input id="userAppPw" class="mono" placeholder="xxxx xxxx xxxx xxxx" autocomplete="off" maxlength="19"></div>
+        <div class="note">⚠️ Normal password nahi chalega. Gmail → Security → 2FA ON → App Passwords se 16-char password banao.</div>
+      </div>
+      <button class="btn" onclick="registerUser()" id="regBtn"><span>Generate My API Key</span></button>
+
+      <div id="apiKeyResult" class="key-box hidden">
+        <div class="check-icon">✓</div>
+        <h3>API Key Ready!</h3>
+        <div class="key-text" id="generatedKey"></div>
+        <button class="copy-btn" onclick="copyApiKey()">📋 Copy to Clipboard</button>
+        <div class="note" style="justify-content:center;margin-top:14px">
+          Use as <code style="background:rgba(91,140,255,.15);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;color:#93b4ff">X-API-Key</code> header
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div id="paymentTab" class="panel hidden">
+      <div class="form-group">
+        <label>API Key <span class="req">*</span></label>
+        <div class="input-wrap"><input id="apiKey" class="mono" placeholder="fp_live_..." autocomplete="off"></div>
+      </div>
+      <div class="form-group">
+        <label>Amount (₹) <span class="req">*</span></label>
+        <div class="input-wrap"><input type="number" id="amount" value="10" min="1" step="1"></div>
+      </div>
+      <button class="btn" onclick="createOrder()" id="createBtn"><span>Generate Payment QR</span></button>
+
+      <div id="resultSection" class="hidden">
+        <div class="result-box">
+          <div class="qr-container"><img id="qrImage" class="qr-img" alt="Payment QR"></div>
+          <div class="detail-row"><strong>Order ID</strong><span id="orderIdText"></span></div>
+          <div class="detail-row"><strong>Amount</strong><span id="amountText"></span></div>
+          <div class="detail-row"><strong>UPI ID</strong><span id="upiIdText"></span></div>
+          <div class="detail-row" style="border:none">
+            <strong>Status</strong>
+            <span id="statusBadge" class="status-badge status-pending">PENDING</span>
+          </div>
+          <div class="check-section">
+            <button class="btn btn-check" onclick="checkStatus()" id="checkBtn"><span>Check Status</span></button>
+            <button class="btn btn-secondary" onclick="resetForm()">New</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboardTab" class="panel hidden">
+      <div class="form-group">
+        <label>API Key <span class="req">*</span></label>
+        <div class="input-wrap"><input id="dashApiKey" class="mono" placeholder="fp_live_..." autocomplete="off"></div>
+      </div>
+      <button class="btn" onclick="loadDashboard()" id="dashBtn"><span>Load My Dashboard</span></button>
+
+      <div id="dashboardContent" class="hidden" style="margin-top:22px">
+        <div class="user-info-card">
+          <h3 id="userNameDisplay">👤</h3>
+          <div class="info-row"><span>UPI ID</span><span id="userUpiDisplay"></span></div>
+          <div class="info-row"><span>Gmail</span><span id="userGmailDisplay"></span></div>
+          <div class="info-row"><span>Joined</span><span id="userJoinedDisplay"></span></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card revenue">
+            <div class="stat-label">Total Received</div>
+            <div class="stat-value" id="statRevenue">₹0</div>
+          </div>
+          <div class="stat-card paid">
+            <div class="stat-label">Paid</div>
+            <div class="stat-value" id="statPaid">0</div>
+          </div>
+          <div class="stat-card pending">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" id="statPending">0</div>
+          </div>
+          <div class="stat-card expired">
+            <div class="stat-label">Expired</div>
+            <div class="stat-value" id="statExpired">0</div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <h3 style="font-size:14px;color:#a5c4ff">💳 Payment History</h3>
+          <button onclick="loadDashboard()" class="btn btn-secondary" style="padding:8px 14px;font-size:12px;width:auto">🔄 Refresh</button>
+        </div>
+        <div class="orders-list" id="ordersList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="api-docs">
+    <strong>API Endpoints</strong>
+    <code>POST /register</code> — name, upi_id, gmail_email, gmail_app_password<br>
+    <code>POST /create?amount=100</code> — X-API-Key header<br>
+    <code>GET /check?order_id=...</code> — X-API-Key header<br>
+    <code>GET /dashboard</code> — X-API-Key header (stats + history)
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let currentOrderId = "", currentApiKey = "";
+const API_BASE = "/api";
+
+function toast(msg, type = "info") {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = 'toast', 4000);
+}
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x => x.classList.add('hidden'));
+  if (t === 'register') {
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    document.getElementById('registerTab').classList.remove('hidden');
+  } else if (t === 'payment') {
+    document.querySelectorAll('.tab')[1].classList.add('active');
+    document.getElementById('paymentTab').classList.remove('hidden');
+  } else if (t === 'dashboard') {
+    document.querySelectorAll('.tab')[2].classList.add('active');
+    document.getElementById('dashboardTab').classList.remove('hidden');
+    // auto-fill api key if available
+    const savedKey = document.getElementById('apiKey').value.trim();
+    if (savedKey && !document.getElementById('dashApiKey').value) {
+      document.getElementById('dashApiKey').value = savedKey;
+    }
+  }
+}
+
+function setLoading(btn, loading, text) {
+  btn.disabled = loading;
+  btn.classList.toggle('loading', loading);
+  if (text) btn.querySelector('span').textContent = text;
+}
+
+async function registerUser() {
+  const name = document.getElementById('userName').value.trim();
+  const upi = document.getElementById('userUpi').value.trim();
+  const gmail = document.getElementById('userGmail').value.trim();
+  const pw = document.getElementById('userAppPw').value.trim().replace(/\s+/g, '');
+  if (!name || !upi || !gmail || !pw) return toast("Sab fields bharo!", "error");
+  if (pw.length !== 16) return toast("App Password 16 characters ka hona chahiye", "error");
+
+  const btn = document.getElementById('regBtn');
+  setLoading(btn, true, "Verifying Gmail...");
+
+  try {
+    const res = await fetch(`${API_BASE}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, upi_id: upi, gmail_email: gmail, gmail_app_password: pw })
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      document.getElementById('generatedKey').innerText = data.api_key;
+      document.getElementById('apiKeyResult').classList.remove('hidden');
+      document.getElementById('apiKey').value = data.api_key;
+      document.getElementById('dashApiKey').value = data.api_key;
+      toast("✅ API Key ready! Ab Test Payment tab me use karo", "success");
+      setTimeout(() => switchTab('payment'), 900);
+    } else {
+      toast("❌ " + (data.message || "Failed"), "error");
+      if (data.debug) console.warn("Debug:", data.debug);
+    }
+  } catch (e) {
+    toast("❌ " + e.message, "error");
+  } finally {
+    setLoading(btn, false, "Generate My API Key");
+  }
+}
+
+function copyApiKey() {
+  const k = document.getElementById('generatedKey').innerText;
+  navigator.clipboard.writeText(k)
+    .then(() => toast("📋 Copied!", "success"))
+    .catch(() => toast("Copy failed", "error"));
+}
+
+async function createOrder() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const amount = document.getElementById('amount').value;
+  if (!apiKey) return toast("API Key daalo!", "error");
+  if (amount < 1) return toast("Minimum ₹1", "error");
+
+  currentApiKey = apiKey;
+  const btn = document.getElementById('createBtn');
+  setLoading(btn, true, "Generating...");
+
+  try {
+    const res = await fetch(`${API_BASE}/create?amount=${amount}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey }
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      currentOrderId = data.order_id;
+      document.getElementById('resultSection').classList.remove('hidden');
+      document.getElementById('qrImage').src = data.qr_url;
+      document.getElementById('orderIdText').innerText = data.order_id;
+      document.getElementById('amountText').innerText = "₹" + data.amount;
+      document.getElementById('upiIdText').innerText = data.upi_id;
+      const b = document.getElementById('statusBadge');
+      b.innerText = "PENDING";
+      b.className = "status-badge status-pending";
+      toast("QR Generated — scan karke pay karo", "info");
+    } else {
+      toast("❌ " + (data.message || "Failed"), "error");
+    }
+  } catch (e) {
+    toast("❌ " + e.message, "error");
+  } finally {
+    setLoading(btn, false, "Generate Payment QR");
+  }
+}
+
+async function checkStatus() {
+  if (!currentOrderId) return;
+  const btn = document.getElementById('checkBtn');
+  setLoading(btn, true, "Checking...");
+  try {
+    const res = await fetch(`${API_BASE}/check?order_id=${currentOrderId}&api_key=${currentApiKey}`, {
+      headers: { 'X-API-Key': currentApiKey }
+    });
+    const data = await res.json();
+    const b = document.getElementById('statusBadge');
+    if (data.status === 'paid') {
+      b.innerText = "PAID";
+      b.className = "status-badge status-paid";
+      toast("✅ Payment Received! UTR: " + (data.utr || "N/A"), "success");
+    } else if (data.status === 'expired') {
+      b.innerText = "EXPIRED";
+      b.className = "status-badge status-expired";
+      toast("❌ Order expired", "error");
+    } else {
+      b.innerText = "PENDING";
+      b.className = "status-badge status-pending";
+      toast("⏳ Payment not received yet", "info");
+    }
+  } catch (e) {
+    toast("❌ " + e.message, "error");
+  } finally {
+    setLoading(btn, false, "Check Status");
+  }
+}
+
+function resetForm() {
+  currentOrderId = "";
+  document.getElementById('resultSection').classList.add('hidden');
+  document.getElementById('amount').value = "10";
+}
+
+// ---------- DASHBOARD ----------
+async function loadDashboard() {
+  const apiKey = document.getElementById('dashApiKey').value.trim();
+  if (!apiKey) return toast("API Key daalo!", "error");
+
+  const btn = document.getElementById('dashBtn');
+  setLoading(btn, true, "Loading...");
+
+  try {
+    const res = await fetch(`${API_BASE}/dashboard`, {
+      headers: { 'X-API-Key': apiKey }
+    });
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      // user info
+      document.getElementById('userNameDisplay').textContent = "👤 " + (data.user.name || "User");
+      document.getElementById('userUpiDisplay').textContent = data.user.upi_id || "—";
+      document.getElementById('userGmailDisplay').textContent = data.user.gmail_email || "—";
+      document.getElementById('userJoinedDisplay').textContent = formatDate(data.user.joined);
+
+      // stats
+      const s = data.stats;
+      document.getElementById('statRevenue').textContent = "₹" + (s.total_received || 0);
+      document.getElementById('statPaid').textContent = s.paid_count || 0;
+      document.getElementById('statPending').textContent = s.pending_count || 0;
+      document.getElementById('statExpired').textContent = s.expired_count || 0;
+
+      // orders
+      const list = document.getElementById('ordersList');
+      list.innerHTML = '';
+      if (!data.orders || data.orders.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">📭</div>Abhi koi order nahi hai.<br>Test Payment tab me QR banao aur payment karo!</div>';
+      } else {
+        data.orders.forEach(o => {
+          const row = document.createElement('div');
+          row.className = 'order-row';
+          const statusCls = o.status === 'paid' ? 'status-paid' : (o.status === 'expired' ? 'status-expired' : 'status-pending');
+          const statusTxt = (o.status || 'pending').toUpperCase();
+          row.innerHTML = `
+            <div class="order-info">
+              <div class="order-id">${o.id}</div>
+              <div class="order-meta">${formatDate(o.created_at)} ${o.utr ? '· UTR: ' + o.utr : ''}</div>
+            </div>
+            <div class="order-right">
+              <div class="order-amt">₹${o.amount}</div>
+              <span class="status-badge ${statusCls}">${statusTxt}</span>
+            </div>
+          `;
+          list.appendChild(row);
+        });
+      }
+
+      document.getElementById('dashboardContent').classList.remove('hidden');
+      toast("✅ Dashboard loaded", "success");
+    } else {
+      toast("❌ " + (data.message || "Failed"), "error");
+    }
+  } catch (e) {
+    toast("❌ " + e.message, "error");
+  } finally {
+    setLoading(btn, false, "Load My Dashboard");
+  }
+}
+
+function formatDate(iso) {
+  if (!iso) return "—";
+  try {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleString('en-IN', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  } catch { return iso; }
+}
+</script>
+</body>
+</html>
