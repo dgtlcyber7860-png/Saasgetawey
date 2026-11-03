@@ -395,7 +395,8 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 
 <script>
 let currentOrderId = "", currentApiKey = "";
-const API_BASE = "/api";
+// Vercel pe backend direct root pe chalega (No /api prefix)
+const API_BASE = "";
 
 function toast(msg, type = "info") {
   const t = document.getElementById('toast');
@@ -417,7 +418,6 @@ function switchTab(t) {
   } else if (t === 'dashboard') {
     document.querySelectorAll('.tab')[2].classList.add('active');
     document.getElementById('dashboardTab').classList.remove('hidden');
-    // auto-fill api key if available
     const savedKey = document.getElementById('apiKey').value.trim();
     if (savedKey && !document.getElementById('dashApiKey').value) {
       document.getElementById('dashApiKey').value = savedKey;
@@ -547,7 +547,6 @@ function resetForm() {
   document.getElementById('amount').value = "10";
 }
 
-// ---------- DASHBOARD ----------
 async function loadDashboard() {
   const apiKey = document.getElementById('dashApiKey').value.trim();
   if (!apiKey) return toast("API Key daalo!", "error");
@@ -562,20 +561,17 @@ async function loadDashboard() {
     const data = await res.json();
 
     if (data.status === 'success') {
-      // user info
       document.getElementById('userNameDisplay').textContent = "👤 " + (data.user.name || "User");
       document.getElementById('userUpiDisplay').textContent = data.user.upi_id || "—";
       document.getElementById('userGmailDisplay').textContent = data.user.gmail_email || "—";
       document.getElementById('userJoinedDisplay').textContent = formatDate(data.user.joined);
 
-      // stats
       const s = data.stats;
       document.getElementById('statRevenue').textContent = "₹" + (s.total_received || 0);
       document.getElementById('statPaid').textContent = s.paid_count || 0;
       document.getElementById('statPending').textContent = s.pending_count || 0;
       document.getElementById('statExpired').textContent = s.expired_count || 0;
 
-      // orders
       const list = document.getElementById('ordersList');
       list.innerHTML = '';
       if (!data.orders || data.orders.length === 0) {
@@ -625,4 +621,4 @@ function formatDate(iso) {
 }
 </script>
 </body>
-  </html>
+</html>
