@@ -3,30 +3,20 @@ import sys
 import os
 import json
 
+# Add root dir to path so we can import app.py
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from app import handler
 
 def app(environ, start_response):
     path = environ.get('PATH_INFO', '/')
     
-    # Serve HTML UI
-    if path == '/' or path == '':
-        try:
-            root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            with open(os.path.join(root_dir, 'index.html'), 'rb') as f:
-                html_content = f.read()
-            start_response("200 OK", [("Content-Type", "text/html; charset=utf-8")])
-            return [html_content]
-        except Exception as e:
-            start_response("500 Internal Server Error", [("Content-Type", "text/plain")])
-            return [f"HTML Error: {str(e)}".encode()]
-
-    # Add /api back to path for Vercel routing
+    # Vercel strips /api, we add it back for app.py logic
     if not path.startswith('/api/'):
         path = '/api' + path
     environ['PATH_INFO'] = path
 
-    # Wrapper Class
+    # Wrapper for BaseHTTPRequestHandler
     class FakeRequest:
         def __init__(self, environ):
             self.environ = environ
