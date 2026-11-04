@@ -1,4 +1,424 @@
-import base64,zlib,os
-# RVhEVU0x
-encoded = "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"
-exec(zlib.decompress(base64.b64decode(encoded)).decode("utf-8"))
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import os, re, json, time, random, imaplib, email, base64
+from email.header import decode_header
+from email.utils import parsedate_to_datetime
+from datetime import datetime, timezone
+from urllib.parse import urlencode, quote, urlparse, parse_qs
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from cryptography.fernet import Fernet
+
+# ============================================================
+# FIREBASE ADMIN
+# ============================================================
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+_cred_path = os.environ.get("FIREBASE_CREDENTIALS", "")
+_cred_json = os.environ.get("FIREBASE_CREDENTIALS_JSON", "")
+
+try:
+    if _cred_json:
+        cred = credentials.Certificate(json.loads(_cred_json))
+    elif _cred_path and os.path.isfile(_cred_path):
+        cred = credentials.Certificate(_cred_path)
+    else:
+        _default = os.path.join(os.path.dirname(os.path.abspath(__file__)), "serviceAccount.json")
+        if os.path.isfile(_default):
+            cred = credentials.Certificate(_default)
+        else:
+            cred = None
+
+    if cred and not firebase_admin._apps:
+        firebase_admin.initialize_app(cred)
+        db = firestore.client()
+    else:
+        db = None
+except Exception as e:
+    print("FIREBASE INIT ERROR:", e)
+    db = None
+
+USERS_COL = "fampay_users"
+ORDERS_COL = "fampay_orders"
+
+# ============================================================
+# CONFIG & ADMIN SETUP
+# ============================================================
+CONFIG = {
+    "admin_password": os.environ.get("ADMIN_PASSWORD", "admin123"), # Admin Panel Password
+    "encryption_key": os.environ.get("ENCRYPTION_KEY", ""),
+    "expiry_minutes": int(os.environ.get("EXPIRY_MINUTES", "15")),
+    "port": int(os.environ.get("PORT", "8080")),
+}
+
+def get_fernet():
+    key = CONFIG["encryption_key"]
+    key_file = os.path.join("/tmp", ".fernet.key")
+    if not key:
+        if os.path.isfile(key_file):
+            key = open(key_file, "rb").read()
+        else:
+            key = Fernet.generate_key()
+            try:
+                with open(key_file, "wb") as f: f.write(key)
+            except Exception: pass
+        CONFIG["encryption_key"] = key
+    return Fernet(key if isinstance(key, bytes) else key.encode())
+
+# ============================================================
+# FIRESTORE HELPERS
+# ============================================================
+def fs_save_user(api_key, data):
+    if not db: return False, "DB not connected"
+    try:
+        db.collection(USERS_COL).document(api_key).set(data)
+        return True, "Success"
+    except Exception as e:
+        return False, str(e)
+
+def fs_get_user(api_key):
+    if not db: return None
+    try:
+        doc = db.collection(USERS_COL).document(api_key).get()
+        return doc.to_dict() if doc.exists else None
+    except Exception: return None
+
+def fs_get_all_users():
+    if not db: return []
+    try:
+        return [d.to_dict() for d in db.collection(USERS_COL).stream()]
+    except Exception: return []
+
+def fs_update_user(api_key, update_data):
+    if not db: return False
+    try:
+        db.collection(USERS_COL).document(api_key).update(update_data)
+        return True
+    except Exception: return False
+
+def fs_save_order(order_id, data):
+    if not db: return
+    try: db.collection(ORDERS_COL).document(order_id).set(data)
+    except Exception: pass
+
+def fs_get_order(order_id):
+    if not db: return None
+    try:
+        doc = db.collection(ORDERS_COL).document(order_id).get()
+        return doc.to_dict() if doc.exists else None
+    except Exception: return None
+
+def fs_list_user_orders(api_key, limit=100):
+    if not db: return []
+    try:
+        q = db.collection(ORDERS_COL).where("owner", "==", api_key).limit(limit)
+        rows = [d.to_dict() for d in q.stream()]
+        rows.sort(key=lambda r: r.get("created_ts", 0), reverse=True)
+        return rows
+    except Exception: return []
+
+def fs_user_stats(api_key):
+    if not db: return {"total_orders": 0, "paid_count": 0, "pending_count": 0, "expired_count": 0, "total_received": 0}
+    try:
+        rows = fs_list_user_orders(api_key, limit=500)
+        paid = [r for r in rows if r.get("status") == "paid"]
+        pending = [r for r in rows if r.get("status") == "pending"]
+        expired = [r for r in rows if r.get("status") == "expired"]
+        total_paid_amount = sum(float(r.get("amount", 0)) for r in paid)
+        return {
+            "total_orders": len(rows),
+            "paid_count": len(paid),
+            "pending_count": len(pending),
+            "expired_count": len(expired),
+            "total_received": round(total_paid_amount, 2),
+        }
+    except Exception: return {"total_orders": 0, "paid_count": 0, "pending_count": 0, "expired_count": 0, "total_received": 0}
+
+# ============================================================
+# ENCRYPTION & AUTH
+# ============================================================
+def encrypt_secret(val): return get_fernet().encrypt(val.encode("utf-8")).decode("utf-8")
+def decrypt_secret(val):
+    try: return get_fernet().decrypt(val.encode("utf-8")).decode("utf-8")
+    except Exception: return ""
+
+def generate_api_key():
+    raw = base64.urlsafe_b64encode(os.urandom(24)).decode().rstrip("=")
+    return "fp_live_" + raw
+
+def register_user(name, upi_id, gmail_email, gmail_app_password):
+    api_key = generate_api_key()
+    user_doc = {
+        "name": name,
+        "upi_id": upi_id.strip(),
+        "gmail_email": gmail_email.strip().lower(),
+        "gmail_app_password_enc": encrypt_secret(re.sub(r"\s+", "", gmail_app_password)),
+        "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "created_ts": int(time.time()),
+        "expiry_date": None, # Admin sets this later
+    }
+    success, msg = fs_save_user(api_key, user_doc)
+    if not success: raise Exception(msg)
+    return api_key
+
+def get_user_by_api_key(api_key):
+    if not api_key: return None
+    user = fs_get_user(api_key)
+    if not user: return None
+    
+    # Check Expiry
+    expiry_date = user.get("expiry_date")
+    if expiry_date:
+        try:
+            # Format: YYYY-MM-DD
+            exp_ts = datetime.strptime(expiry_date, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp()
+            if time.time() > exp_ts:
+                return None # Expired
+        except Exception: pass
+    return user
+
+# ============================================================
+# FAMPAY EMAIL PARSING (Same as before)
+# ============================================================
+FAMPAY_SENDER_HINTS = ["fampay", "famapp", "fam pay", "yesfam", "idfc", "upi", "credited", "payment", "ord_"]
+
+def looks_like_fampay(sender, subject, body_preview):
+    h = f"{sender} {subject} {body_preview[:800]}".lower()
+    return any(x in h for x in FAMPAY_SENDER_HINTS)
+
+def extract_utr(text):
+    if not text: return None
+    m = re.search(r"\b(?:UTR|RRN|Ref|Txn)\s*[:\s#]*([0-9]{12})\b", text, re.I)
+    if m: return m.group(1)
+    f = re.search(r"\b(FMP[A-Z0-9]{8,24})\b", text, re.IGNORECASE)
+    if f: return f.group(1)
+    b = re.search(r"(?:^|[^A-Za-z0-9])([0-9]{12})(?:[^A-Za-z0-9]|$)", text)
+    return b.group(1) if b else None
+
+def extract_amount(text):
+    if not text: return None
+    pats = [r"(?:Rs\.?|INR|₹)\s*([\d,]+(?:\.\d{1,2})?)", r"amount\s*[:\-]?\s*(?:Rs\.?|INR|₹)?\s*([\d,]+(?:\.\d{1,2})?)"]
+    for p in pats:
+        m = re.search(p, text, re.I)
+        if m and m.group(1):
+            try:
+                v = float(m.group(1).replace(",", ""))
+                if v > 0: return v
+            except: pass
+    return None
+
+def decode_mime_header_str(v):
+    if not v: return ""
+    out = []
+    for c, e in decode_header(v):
+        out.append(c.decode(e or "utf-8", errors="replace") if isinstance(c, bytes) else str(c))
+    return "".join(out)
+
+def extract_message_body(msg):
+    parts = []
+    if msg.is_multipart():
+        for p in msg.walk():
+            if (p.get_content_type() or "").lower() in ("text/plain", "text/html"):
+                pl = p.get_payload(decode=True)
+                if pl: parts.append(pl.decode(p.get_content_charset() or "utf-8", errors="replace"))
+    else:
+        pl = msg.get_payload(decode=True)
+        if pl: parts.append(pl.decode(msg.get_content_charset() or "utf-8", errors="replace"))
+    t = "\n".join(parts)
+    t = re.sub(r"<[^>]+>", " ", t).replace("&#8377;", "₹")
+    return re.sub(r"\s+", " ", t).strip()
+
+def amount_in_paise(v):
+    try: return int(round(float(v) * 100))
+    except: return None
+
+def is_eligible_mail(mail, order):
+    ep = amount_in_paise(mail.get("amount"))
+    op = amount_in_paise(order.get("payable_amount") or order.get("amount"))
+    if ep is None or op is None or ep != op: return False
+    rt = int(mail.get("received_ts") or 0)
+    ct = int(order.get("created_ts") or 0)
+    et = int(order.get("expires_ts") or (ct + 900))
+    return rt and (ct - 300) <= rt <= (et + 300)
+
+def fetch_fampay_emails(user_cfg):
+    user = user_cfg["gmail_email"].strip().lower()
+    pw = decrypt_secret(user_cfg["gmail_app_password_enc"])
+    debug = {"connected": False, "error": None}
+    results = []
+    if not user or not pw: return {"emails": results, "debug": debug}
+    try:
+        imap = imaplib.IMAP4_SSL("imap.gmail.com", 993, timeout=8)
+        imap.login(user, pw)
+        debug["connected"] = True
+        imap.select("INBOX", readonly=True)
+        typ, data = imap.search(None, "ALL")
+        ids = data[0].split() if (typ == "OK" and data and data[0]) else []
+        newest = list(reversed(ids[-10:]))
+        for mid in newest:
+            typ, md = imap.fetch(mid, "(BODY.PEEK[])")
+            if typ != "OK" or not md or not md[0]: continue
+            msg = email.message_from_bytes(md[0][1])
+            subj = decode_mime_header_str(msg.get("Subject", ""))
+            sender = decode_mime_header_str(msg.get("From", ""))
+            try: rt = int(parsedate_to_datetime(msg.get("Date", "")).timestamp())
+            except: rt = int(time.time())
+            body = extract_message_body(msg)
+            if looks_like_fampay(sender, subj, body):
+                full = f"{subj}\n{body}"
+                amt = extract_amount(full)
+                utr = extract_utr(full)
+                if amt or utr:
+                    results.append({"utr": utr, "amount": amt, "received_ts": rt, "raw": body[:500]})
+        imap.logout()
+    except Exception as e: debug["error"] = str(e)
+    return {"emails": results, "debug": debug}
+
+def verify_order_against_mailbox(order, user_cfg):
+    scan = fetch_fampay_emails(user_cfg)
+    tp = amount_in_paise(order.get("payable_amount") or order.get("amount"))
+    for mail in scan["emails"]:
+        if is_eligible_mail(mail, order):
+            order["status"] = "paid"
+            order["utr"] = mail.get("utr") or order.get("reference")
+            order["paid_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            order["paid_ts"] = int(time.time())
+            fs_save_order(order["id"], order)
+            return True
+    return False
+
+# ============================================================
+# HTTP SERVER
+# ============================================================
+class handler(BaseHTTPRequestHandler):
+    def _json(self, payload, status=200):
+        b = json.dumps(payload, ensure_ascii=False, default=str).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-API-Key, Authorization")
+        self.send_header("Content-Length", str(len(b)))
+        self.end_headers()
+        self.wfile.write(b)
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-API-Key, Authorization")
+        self.end_headers()
+
+    def do_GET(self): self._handle("GET")
+    def do_POST(self): self._handle("POST")
+
+    def _handle(self, method):
+        try: self._process_request(method)
+        except Exception as e: self._json({"status": "error", "message": str(e)}, 500)
+
+    def _process_request(self, method):
+        parsed = urlparse(self.path)
+        q = {k.strip().lower(): v[0].strip() for k, v in parse_qs(parsed.query).items()}
+        raw = int(self.headers.get("Content-Length", "0") or "0")
+        body = {}
+        if raw > 0:
+            try: body = json.loads(self.rfile.read(raw).decode())
+            except: pass
+
+        action = (q.get("action") or body.get("action") or "").lower()
+        if not action:
+            if "/register" in parsed.path: action = "register"
+            elif "/check" in parsed.path: action = "check"
+            elif "/dashboard" in parsed.path: action = "dashboard"
+            elif "/admin" in parsed.path: action = "admin"
+            else: action = "create"
+
+        # --- ADMIN ACTIONS ---
+        if action.startswith("admin_"):
+            admin_pass = self.headers.get("X-Admin-Pass") or q.get("pass") or body.get("pass")
+            if admin_pass != CONFIG["admin_password"]:
+                return self._json({"status": "error", "message": "Invalid Admin Password"}, 401)
+
+            if action == "admin_get_users":
+                users = fs_get_all_users()
+                # Remove sensitive info before sending
+                for u in users: u.pop("gmail_app_password_enc", None)
+                return self._json({"status": "success", "users": users})
+            
+            if action == "admin_update_expiry":
+                target_key = body.get("api_key") or q.get("api_key")
+                new_expiry = body.get("expiry_date") or q.get("expiry_date") # YYYY-MM-DD or null
+                if not target_key: return self._json({"status": "error", "message": "api_key required"}, 400)
+                fs_update_user(target_key, {"expiry_date": new_expiry})
+                return self._json({"status": "success", "message": "Expiry updated"})
+
+        # --- REGISTER ---
+        if action == "register":
+            name = (body.get("name") or q.get("name") or "").strip()
+            upi = (body.get("upi_id") or q.get("upi_id") or "").strip()
+            gmail = (body.get("gmail_email") or q.get("gmail_email") or "").strip()
+            app_pw = (body.get("gmail_app_password") or q.get("gmail_app_password") or "").strip()
+            if not all([name, upi, gmail, app_pw]):
+                return self._json({"status": "error", "message": "All fields required"}, 400)
+            
+            test_cfg = {"gmail_email": gmail, "gmail_app_password_enc": encrypt_secret(re.sub(r"\s+", "", app_pw))}
+            scan = fetch_fampay_emails(test_cfg)
+            if not scan["debug"]["connected"]:
+                return self._json({"status": "error", "message": "Gmail login failed"}, 401)
+            
+            api_key = register_user(name, upi, gmail, app_pw)
+            return self._json({"status": "success", "api_key": api_key, "name": name}, 201)
+
+        # --- AUTH FOR USERS ---
+        api_key = self.headers.get("X-API-Key") or q.get("api_key") or body.get("api_key") or ""
+        user_cfg = get_user_by_api_key(api_key)
+        if not user_cfg:
+            return self._json({"status": "error", "message": "Invalid or Expired API Key"}, 401)
+
+        if action == "dashboard":
+            return self._json({
+                "status": "success",
+                "user": {"name": user_cfg.get("name"), "upi_id": user_cfg.get("upi_id"), "gmail_email": user_cfg.get("gmail_email"), "expiry_date": user_cfg.get("expiry_date")},
+                "stats": fs_user_stats(api_key),
+                "orders": fs_list_user_orders(api_key, 100)
+            })
+
+        if action == "check":
+            oid = q.get("order_id") or body.get("order_id")
+            order = fs_get_order(oid)
+            if not order or order.get("owner") != api_key: return self._json({"status": "error", "message": "Not found"}, 404)
+            
+            if order["status"] == "pending":
+                if int(time.time()) > int(order.get("expires_ts", 0)):
+                    order["status"] = "expired"
+                    fs_save_order(oid, order)
+                else:
+                    verify_order_against_mailbox(order, user_cfg)
+            
+            return self._json({"status": order["status"], "order_id": oid, "amount": order["amount"], "utr": order.get("utr")})
+
+        # --- CREATE ORDER ---
+        try: amount = round(float(body.get("amount") or q.get("amount") or 0), 2)
+        except: amount = 0.0
+        if amount < 1.0: return self._json({"status": "error", "message": "Min ₹1.00"}, 400)
+
+        now = int(time.time())
+        exp = now + CONFIG["expiry_minutes"] * 60
+        ref = str(random.randint(100000000000, 999999999999))
+        oid = f"ord_{now}_{int(amount*100)}_{ref}"
+        
+        upi_link = f"upi://pay?pa={quote(user_cfg['upi_id'])}&pn={quote(user_cfg.get('name', 'Merchant'))}&am={amount:.2f}&cu=INR&tn={quote(oid)}&tr={quote(ref)}"
+        
+        new_order = {
+            "id": oid, "owner": api_key, "amount": amount, "payable_amount": amount,
+            "provider": "fampay", "upi_id": user_cfg["upi_id"], "upi_link": upi_link,
+            "qr_url": f"https://quickchart.io/qr?text={quote(upi_link)}&size=300",
+            "reference": ref, "status": "pending", "created_ts": now, "expires_ts": exp,
+            "created_at": datetime.fromtimestamp(now, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        }
+        fs_save_order(oid, new_order)
+        return self._json({
+            "status": "success", "order_id": oid, "amount": amount, "upi_id": user_cfg["upi_id"],
+            "upi_link": upi_link, "qr_url": new_order["qr_url"], "expires_at": datetime.fromtimestamp(exp, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        }, 201)
+
+FamPayAPIHandler = handler
