@@ -1,8 +1,553 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><script>
-const d="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", k="MzVQMzBT";
-const b=atob(d), u=new Uint8Array(b.length);
-for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
-const s=new DecompressionStream("deflate"), w=s.writable.getWriter();
-w.write(u);w.close();
-new Response(s.readable).arrayBuffer().then(r=>{document.open();document.write(new TextDecoder().decode(r));document.close();});
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FamPay API · Secure UPI Gateway</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+:root{
+  --bg:#070b14;--bg2:#0d1424;--card:rgba(20,30,52,.65);
+  --border:rgba(99,152,255,.14);--primary:#5b8cff;--primary2:#8b5cf6;
+  --success:#10d9a0;--warn:#fbbf24;--danger:#f43f5e;
+  --text:#e8eefc;--muted:#8ba0c4;
+}
+html,body{min-height:100%}
+body{
+  background:var(--bg);color:var(--text);
+  display:flex;justify-content:center;align-items:flex-start;
+  min-height:100vh;padding:32px 16px;
+  background-image:
+    radial-gradient(circle at 15% 0%,rgba(91,140,255,.18),transparent 45%),
+    radial-gradient(circle at 85% 100%,rgba(139,92,246,.18),transparent 45%),
+    radial-gradient(circle at 50% 50%,rgba(16,217,160,.06),transparent 60%);
+  background-attachment:fixed;position:relative;overflow-x:hidden;
+}
+body::before{content:"";position:fixed;inset:-50%;z-index:-1;background:conic-gradient(from 0deg,transparent,rgba(91,140,255,.06),transparent 30%);animation:spin 22s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.container{width:100%;max-width:680px;position:relative;z-index:1;transition:max-width .3s;}
+.container.admin-mode{max-width:900px;}
+
+.brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px;position:relative;}
+.brand-logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary2));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 8px 24px rgba(91,140,255,.35);}
+.brand h1{font-size:24px;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#fff,#93b4ff 60%,#c4a4ff);-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+/* 3 Dot Menu */
+.menu-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;padding:5px;line-height:1;}
+.menu-btn:hover{color:#fff;}
+.dropdown{position:absolute;right:0;top:100%;margin-top:8px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:6px;display:none;z-index:100;min-width:150px;box-shadow:0 10px 30px rgba(0,0,0,.5);}
+.dropdown.show{display:block;}
+.dropdown-item{display:block;width:100%;text-align:left;padding:10px 12px;background:none;border:none;color:var(--text);font-size:13px;font-weight:500;border-radius:6px;cursor:pointer;}
+.dropdown-item:hover{background:rgba(91,140,255,.1);color:var(--primary);}
+.dropdown-item.admin{color:var(--danger);}
+.dropdown-item.admin:hover{background:rgba(244,63,94,.1);}
+
+.header{text-align:center;margin-bottom:28px;}
+.header p{font-size:13px;color:var(--muted);margin-top:2px;}
+.card{background:var(--card);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:20px;padding:8px;box-shadow:0 20px 60px rgba(0,0,0,.45);position:relative;overflow:hidden;}
+.tabs{display:flex;padding:6px;gap:4px;background:rgba(7,11,20,.6);border-radius:14px;border:1px solid var(--border);margin-bottom:20px;}
+.tab{flex:1;text-align:center;padding:11px 8px;cursor:pointer;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);transition:all .3s;}
+.tab:hover{color:var(--text);}
+.tab.active{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 6px 20px rgba(91,140,255,.4);}
+.panel{padding:20px 18px 22px;}
+.form-group{margin-bottom:16px;}
+label{display:flex;align-items:center;gap:6px;margin-bottom:7px;font-size:12px;font-weight:600;color:#c3d2ee;}
+label .req{color:var(--danger);font-size:11px;}
+input{width:100%;padding:13px 14px;border:1.5px solid rgba(99,152,255,.16);background:rgba(7,11,20,.7);color:var(--text);border-radius:11px;outline:none;font-size:14px;transition:all .25s;}
+input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(91,140,255,.14);}
+input.mono{font-family:'JetBrains Mono',monospace;font-size:13px;}
+.note{font-size:11px;color:var(--warn);margin-top:7px;line-height:1.5;}
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;border:none;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;transition:all .25s;box-shadow:0 8px 24px rgba(91,140,255,.35);}
+.btn:hover:not(:disabled){transform:translateY(-2px);}
+.btn:disabled{background:linear-gradient(135deg,#3a4a68,#4b3f68);cursor:not-allowed;opacity:.7;}
+.btn.loading::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;}
+.hidden{display:none!important;}
+
+/* User Dashboard */
+.user-info-card{background:linear-gradient(135deg,rgba(91,140,255,.15),rgba(139,92,246,.15));border:1px solid rgba(139,92,246,.3);border-radius:16px;padding:20px;margin-bottom:24px;display:flex;align-items:center;gap:16px;}
+.user-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary2));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;}
+.user-details{flex:1;}
+.user-details h3{font-size:16px;font-weight:700;color:#fff;}
+.user-details .info-row{display:flex;gap:12px;font-size:11.5px;color:var(--muted);margin-top:4px;}
+.user-details .info-row span{font-family:'JetBrains Mono',monospace;color:#a5c4ff;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:linear-gradient(145deg, rgba(20,30,52,.8), rgba(13,20,36,.8));border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;position:relative;overflow:hidden;}
+.stat-card::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:var(--primary);}
+.stat-card.revenue::before{background:var(--success);}
+.stat-card.paid::before{background:var(--success);}
+.stat-card.pending::before{background:var(--warn);}
+.stat-card.expired::before{background:var(--danger);}
+.stat-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-weight:700;}
+.stat-value{font-size:22px;font-weight:800;}
+.stat-card.revenue .stat-value, .stat-card.paid .stat-value{color:var(--success);}
+.stat-card.pending .stat-value{color:var(--warn);}
+.stat-card.expired .stat-value{color:var(--danger);}
+
+/* Orders List */
+.orders-list{margin-top:16px;}
+.order-row{background:linear-gradient(145deg, rgba(20,30,52,.6), rgba(13,20,36,.6));border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.order-info{flex:1;min-width:0;}
+.order-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:#93b4ff;margin-bottom:4px;word-break:break-all;}
+.order-meta{font-size:11px;color:var(--muted);}
+.order-right{text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+.order-amt{font-size:16px;font-weight:800;}
+.status-badge{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;}
+.status-pending{background:rgba(251,191,36,.15);color:var(--warn);}
+.status-paid{background:rgba(16,217,160,.15);color:var(--success);}
+.status-expired{background:rgba(244,63,94,.15);color:var(--danger);}
+
+/* Admin Panel Styles */
+.admin-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:12px;}
+.admin-table th,.admin-table td{padding:12px;text-align:left;border-bottom:1px solid var(--border);}
+.admin-table th{color:var(--muted);font-weight:600;}
+.admin-table td{color:var(--text);}
+.admin-table tr:hover{background:rgba(91,140,255,.05);}
+.expiry-input{padding:6px;font-size:11px;border-radius:6px;background:var(--bg);border:1px solid var(--border);color:#fff;width:120px;}
+.save-btn{padding:6px 12px;background:var(--primary);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:11px;}
+.save-btn:hover{background:var(--primary2);}
+.tag-expired{color:var(--danger);font-weight:bold;}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);background:rgba(20,30,52,.95);border:1px solid var(--border);padding:14px 22px;border-radius:12px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s;box-shadow:0 16px 40px rgba(0,0,0,.5);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:rgba(16,217,160,.4);color:var(--success);}
+.toast.error{border-color:rgba(244,63,94,.4);color:var(--danger);}
+.toast.info{border-color:rgba(91,140,255,.4);color:#93b4ff;}
+
+@media(max-width:600px){
+  .tabs{flex-wrap:wrap;}
+  .tab{font-size:12px;padding:9px 6px;}
+  .admin-table th, .admin-table td{padding:8px;font-size:10.5px;}
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+  <div class="header">
+    <div class="brand">
+      <div class="brand-logo">⚡</div>
+      <h1>FamPay Gateway</h1>
+      
+      <!-- 3 Dot Menu -->
+      <button class="menu-btn" onclick="toggleMenu()">⋮</button>
+      <div class="dropdown" id="dropdownMenu">
+        <button class="dropdown-item" onclick="switchTab('dashboard')">📊 My Dashboard</button>
+        <button class="dropdown-item admin" onclick="openAdminPanel()">🔐 Admin Panel</button>
+      </div>
+    </div>
+    <p>Apna UPI + Gmail deke apna API key banao — 100% secure</p>
+  </div>
+
+  <div class="card">
+    <div class="tabs" id="mainTabs">
+      <div class="tab active" onclick="switchTab('register')">🔑 Register</div>
+      <div class="tab" onclick="switchTab('payment')">💳 Test Payment</div>
+      <div class="tab" onclick="switchTab('dashboard')">📊 Dashboard</div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerTab" class="panel">
+      <div class="form-group">
+        <label>Name / Business <span class="req">*</span></label>
+        <input id="userName" placeholder="Rahul Store" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>FamPay UPI ID <span class="req">*</span></label>
+        <input id="userUpi" placeholder="yourname@fam" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Gmail Address <span class="req">*</span></label>
+        <input id="userGmail" type="email" placeholder="you@gmail.com" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Gmail App Password <span class="req">*</span></label>
+        <input id="userAppPw" class="mono" placeholder="xxxx xxxx xxxx xxxx" autocomplete="off" maxlength="19">
+        <div class="note">⚠️ Normal password nahi chalega. Gmail → Security → 2FA ON → App Passwords se 16-char password banao.</div>
+      </div>
+      <button class="btn" onclick="registerUser()" id="regBtn"><span>Generate My API Key</span></button>
+
+      <div id="apiKeyResult" class="hidden" style="text-align:center;margin-top:20px;padding:20px;background:rgba(16,217,160,.1);border-radius:14px;border:1px dashed var(--success);">
+        <h3 style="color:var(--success);margin-bottom:10px;">API Key Ready!</h3>
+        <div id="generatedKey" class="mono" style="font-size:12px;color:#fff;word-break:break-all;margin-bottom:10px;"></div>
+        <div class="note" style="justify-content:center;">Key saved to browser automatically.</div>
+      </div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div id="paymentTab" class="panel hidden">
+      <div class="form-group">
+        <label>API Key <span class="req">*</span></label>
+        <input id="apiKey" class="mono" placeholder="fp_live_...">
+      </div>
+      <div class="form-group">
+        <label>Amount (₹) <span class="req">*</span></label>
+        <input type="number" id="amount" value="10" min="1">
+      </div>
+      <button class="btn" onclick="createOrder()" id="createBtn"><span>Generate Payment QR</span></button>
+
+      <div id="resultSection" class="hidden" style="margin-top:20px;padding:20px;background:rgba(7,11,20,.55);border-radius:16px;border:1px solid var(--border);">
+        <div style="text-align:center;margin-bottom:15px;"><img id="qrImage" style="max-width:200px;border-radius:12px;border:4px solid #fff;"></div>
+        <div class="detail-row" style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;"><strong>Order ID</strong><span id="orderIdText" class="mono"></span></div>
+        <div class="detail-row" style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;"><strong>Amount</strong><span id="amountText"></span></div>
+        <div class="detail-row" style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;">
+          <strong>Status</strong><span id="statusBadge" class="status-badge status-pending">PENDING</span>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:15px;">
+          <button class="btn" onclick="checkStatus()" id="checkBtn" style="background:var(--success);"><span>Check Status</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- USER DASHBOARD -->
+    <div id="dashboardTab" class="panel hidden">
+      <div id="dashboardLogin">
+        <div class="form-group">
+          <label>API Key to Login <span class="req">*</span></label>
+          <input id="dashApiKey" class="mono" placeholder="fp_live_...">
+        </div>
+        <button class="btn" onclick="loadDashboard()" id="dashBtn"><span>View Dashboard</span></button>
+      </div>
+
+      <div id="dashboardContent" class="hidden">
+        <div class="user-info-card">
+          <div class="user-avatar" id="userAvatar">👤</div>
+          <div class="user-details">
+            <h3 id="userNameDisplay">Loading...</h3>
+            <div class="info-row"><span>UPI: <span id="userUpiDisplay"></span></span></div>
+            <div class="info-row"><span>Gmail: <span id="userGmailDisplay"></span></span></div>
+            <div class="info-row" id="userExpiryRow" style="display:none;color:var(--danger);margin-top:4px;font-weight:bold;">
+              Expiry: <span id="userExpiryDisplay"></span>
+            </div>
+          </div>
+          <button onclick="logoutDashboard()" class="btn-secondary" style="padding:8px 12px;font-size:11px;border-radius:8px;border-color:var(--danger);color:var(--danger);">Logout</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card revenue"><div class="stat-label">Total Received</div><div class="stat-value" id="statRevenue">₹0</div></div>
+          <div class="stat-card paid"><div class="stat-label">Paid</div><div class="stat-value" id="statPaid">0</div></div>
+          <div class="stat-card pending"><div class="stat-label">Pending</div><div class="stat-value" id="statPending">0</div></div>
+          <div class="stat-card expired"><div class="stat-label">Expired</div><div class="stat-value" id="statExpired">0</div></div>
+        </div>
+
+        <h3 style="font-size:14px;color:#a5c4ff;margin-bottom:12px;">💳 History</h3>
+        <div class="orders-list" id="ordersList"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL (Hidden by default) -->
+    <div id="adminPanel" class="panel hidden">
+      <div id="adminLogin">
+        <h2 style="font-size:18px;margin-bottom:16px;color:var(--danger);">Admin Authentication</h2>
+        <div class="form-group">
+          <label>Admin Password <span class="req">*</span></label>
+          <input id="adminPass" type="password" placeholder="Enter admin password">
+        </div>
+        <button class="btn" onclick="loginAdmin()" id="adminBtn" style="background:var(--danger);">Login as Admin</button>
+      </div>
+
+      <div id="adminContent" class="hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2 style="font-size:18px;color:#fff;">Manage Users</h2>
+          <button onclick="closeAdmin()" style="background:var(--danger);color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Exit Admin</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>User / UPI</th>
+                <th>API Key</th>
+                <th>Expiry Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let currentOrderId = "", currentApiKey = "", adminPassVal = "";
+const API_BASE = "/api";
+
+window.addEventListener('DOMContentLoaded', () => {
+  const savedKey = localStorage.getItem('fampay_api_key');
+  if (savedKey) {
+    document.getElementById('apiKey').value = savedKey;
+    document.getElementById('dashApiKey').value = savedKey;
+  }
+});
+
+function toggleMenu() {
+  document.getElementById('dropdownMenu').classList.toggle('show');
+}
+
+// Close menu when clicking outside
+window.onclick = function(event) {
+  if (!event.target.matches('.menu-btn')) {
+    const dropdowns = document.getElementsByClassName("dropdown");
+    for (let i = 0; i < dropdowns.length; i++) {
+      let openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
+function toast(msg, type = "info") {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = 'toast', 4000);
+}
+
+function switchTab(t) {
+  document.getElementById('dropdownMenu').classList.remove('show');
+  document.getElementById('mainContainer').classList.remove('admin-mode');
+  document.getElementById('mainTabs').classList.remove('hidden');
+  
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x => x.classList.add('hidden'));
+  
+  if (t === 'register') {
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    document.getElementById('registerTab').classList.remove('hidden');
+  } else if (t === 'payment') {
+    document.querySelectorAll('.tab')[1].classList.add('active');
+    document.getElementById('paymentTab').classList.remove('hidden');
+  } else if (t === 'dashboard') {
+    document.querySelectorAll('.tab')[2].classList.add('active');
+    document.getElementById('dashboardTab').classList.remove('hidden');
+    
+    const savedKey = localStorage.getItem('fampay_api_key');
+    if (savedKey) {
+      document.getElementById('dashboardLogin').classList.add('hidden');
+      document.getElementById('dashboardContent').classList.remove('hidden');
+      document.getElementById('dashApiKey').value = savedKey;
+      loadDashboard(true);
+    } else {
+      document.getElementById('dashboardLogin').classList.remove('hidden');
+      document.getElementById('dashboardContent').classList.add('hidden');
+    }
+  }
+}
+
+function openAdminPanel() {
+  document.getElementById('dropdownMenu').classList.remove('show');
+  document.getElementById('mainContainer').classList.add('admin-mode');
+  document.getElementById('mainTabs').classList.add('hidden');
+  document.querySelectorAll('.panel').forEach(x => x.classList.add('hidden'));
+  
+  document.getElementById('adminPanel').classList.remove('hidden');
+  if (adminPassVal) {
+    document.getElementById('adminLogin').classList.add('hidden');
+    document.getElementById('adminContent').classList.remove('hidden');
+    fetchAdminUsers();
+  } else {
+    document.getElementById('adminLogin').classList.remove('hidden');
+    document.getElementById('adminContent').classList.add('hidden');
+  }
+}
+
+function closeAdmin() {
+  adminPassVal = "";
+  switchTab('register');
+}
+
+// USER FUNCTIONS
+async function registerUser() {
+  const name = document.getElementById('userName').value.trim();
+  const upi = document.getElementById('userUpi').value.trim();
+  const gmail = document.getElementById('userGmail').value.trim();
+  const pw = document.getElementById('userAppPw').value.trim().replace(/\s+/g, '');
+  if (!name || !upi || !gmail || !pw) return toast("All fields required!", "error");
+
+  const btn = document.getElementById('regBtn');
+  btn.disabled = true; btn.innerText = "Please wait...";
+  try {
+    const res = await fetch(`${API_BASE}/register`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name, upi_id:upi, gmail_email:gmail, gmail_app_password:pw})
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      document.getElementById('generatedKey').innerText = data.api_key;
+      document.getElementById('apiKeyResult').classList.remove('hidden');
+      localStorage.setItem('fampay_api_key', data.api_key);
+      document.getElementById('apiKey').value = data.api_key;
+      document.getElementById('dashApiKey').value = data.api_key;
+      toast("Success! API Key generated.", "success");
+    } else toast(data.message, "error");
+  } catch(e) { toast(e.message, "error"); }
+  btn.disabled = false; btn.innerText = "Generate My API Key";
+}
+
+async function createOrder() {
+  const k = document.getElementById('apiKey').value.trim();
+  const amt = document.getElementById('amount').value;
+  if(!k) return toast("Enter API Key", "error");
+  
+  const btn = document.getElementById('createBtn');
+  btn.disabled = true; btn.innerText = "Generating...";
+  currentApiKey = k;
+  localStorage.setItem('fampay_api_key', k);
+  
+  try {
+    const res = await fetch(`${API_BASE}/create?amount=${amt}`, {method:'POST', headers:{'X-API-Key':k}});
+    const data = await res.json();
+    if(data.status === 'success') {
+      currentOrderId = data.order_id;
+      document.getElementById('resultSection').classList.remove('hidden');
+      document.getElementById('qrImage').src = data.qr_url;
+      document.getElementById('orderIdText').innerText = data.order_id;
+      document.getElementById('amountText').innerText = "₹" + data.amount;
+      document.getElementById('statusBadge').innerText = "PENDING";
+      document.getElementById('statusBadge').className = "status-badge status-pending";
+    } else toast(data.message, "error");
+  } catch(e) { toast(e.message, "error"); }
+  btn.disabled = false; btn.innerText = "Generate Payment QR";
+}
+
+async function checkStatus() {
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true; btn.innerText = "Checking...";
+  try {
+    const res = await fetch(`${API_BASE}/check?order_id=${currentOrderId}`, {headers:{'X-API-Key':currentApiKey}});
+    const data = await res.json();
+    const b = document.getElementById('statusBadge');
+    if(data.status === 'paid') { b.innerText="PAID"; b.className="status-badge status-paid"; }
+    else if(data.status === 'expired') { b.innerText="EXPIRED"; b.className="status-badge status-expired"; }
+    else toast("Not received yet.", "info");
+  } catch(e) { toast(e.message, "error"); }
+  btn.disabled = false; btn.innerText = "Check Status";
+}
+
+async function loadDashboard(isAuto=false) {
+  let k = document.getElementById('dashApiKey').value.trim();
+  if(!k) k = localStorage.getItem('fampay_api_key');
+  if(!k) return toast("Enter API key", "error");
+
+  try {
+    const res = await fetch(`${API_BASE}/dashboard`, {headers:{'X-API-Key':k}});
+    const data = await res.json();
+    if(data.status === 'success') {
+      localStorage.setItem('fampay_api_key', k);
+      document.getElementById('dashboardLogin').classList.add('hidden');
+      document.getElementById('dashboardContent').classList.remove('hidden');
+      
+      document.getElementById('userAvatar').textContent = (data.user.name||"U").charAt(0).toUpperCase();
+      document.getElementById('userNameDisplay').textContent = data.user.name;
+      document.getElementById('userUpiDisplay').textContent = data.user.upi_id;
+      document.getElementById('userGmailDisplay').textContent = data.user.gmail_email;
+      
+      if(data.user.expiry_date) {
+        document.getElementById('userExpiryRow').style.display = 'block';
+        document.getElementById('userExpiryDisplay').textContent = data.user.expiry_date;
+      }
+
+      const s = data.stats;
+      document.getElementById('statRevenue').textContent = "₹" + s.total_received;
+      document.getElementById('statPaid').textContent = s.paid_count;
+      document.getElementById('statPending').textContent = s.pending_count;
+      document.getElementById('statExpired').textContent = s.expired_count;
+
+      const list = document.getElementById('ordersList');
+      list.innerHTML = data.orders.length ? '' : '<div style="color:var(--muted);font-size:12px;">No history.</div>';
+      data.orders.forEach(o => {
+        const cls = o.status === 'paid' ? 'status-paid' : (o.status === 'expired' ? 'status-expired' : 'status-pending');
+        list.innerHTML += `
+          <div class="order-row">
+            <div class="order-info">
+              <div class="order-id">${o.id}</div>
+              <div class="order-meta">${o.created_at.substring(0,10)} ${o.utr?'| UTR: '+o.utr:''}</div>
+            </div>
+            <div class="order-right">
+              <div class="order-amt">₹${o.amount}</div>
+              <span class="status-badge ${cls}">${o.status.toUpperCase()}</span>
+            </div>
+          </div>`;
+      });
+      if(!isAuto) toast("Dashboard updated", "success");
+    } else {
+      if(!isAuto) { toast(data.message, "error"); logoutDashboard(); }
+    }
+  } catch(e) { if(!isAuto) toast(e.message, "error"); }
+}
+
+function logoutDashboard() {
+  localStorage.removeItem('fampay_api_key');
+  document.getElementById('dashboardContent').classList.add('hidden');
+  document.getElementById('dashboardLogin').classList.remove('hidden');
+  toast("Logged out", "info");
+}
+
+// ADMIN FUNCTIONS
+async function loginAdmin() {
+  const p = document.getElementById('adminPass').value;
+  if(!p) return toast("Enter password", "error");
+  adminPassVal = p;
+  fetchAdminUsers();
+}
+
+async function fetchAdminUsers() {
+  try {
+    const res = await fetch(`${API_BASE}/admin_get_users`, {headers:{'X-Admin-Pass':adminPassVal}});
+    const data = await res.json();
+    if(data.status === 'success') {
+      document.getElementById('adminLogin').classList.add('hidden');
+      document.getElementById('adminContent').classList.remove('hidden');
+      
+      const tbody = document.getElementById('adminUsersList');
+      tbody.innerHTML = '';
+      data.users.forEach(u => {
+        const expDate = u.expiry_date ? u.expiry_date : '';
+        const isExpired = u.expiry_date && new Date(u.expiry_date) < new Date();
+        
+        tbody.innerHTML += `
+          <tr>
+            <td><b>${u.name}</b><br><span style="color:var(--muted);font-size:10px;">${u.upi_id}</span></td>
+            <td class="mono" style="font-size:10px;word-break:break-all;">${u.api_key || u.id}</td>
+            <td>
+              <input type="date" class="expiry-input" id="exp_${u.api_key || u.id}" value="${expDate}">
+              ${isExpired ? '<br><span class="tag-expired">Expired</span>' : ''}
+            </td>
+            <td>
+              <button class="save-btn" onclick="saveExpiry('${u.api_key || u.id}')">Save</button>
+            </td>
+          </tr>
+        `;
+      });
+    } else {
+      toast("Invalid Admin Password", "error");
+      adminPassVal = "";
+    }
+  } catch(e) { toast(e.message, "error"); }
+}
+
+async function saveExpiry(key) {
+  const dateVal = document.getElementById(`exp_${key}`).value;
+  try {
+    const res = await fetch(`${API_BASE}/admin_update_expiry`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'X-Admin-Pass':adminPassVal},
+      body: JSON.stringify({ api_key: key, expiry_date: dateVal || null })
+    });
+    const data = await res.json();
+    if(data.status === 'success') toast("Expiry Updated!", "success");
+    else toast(data.message, "error");
+  } catch(e) { toast(e.message, "error"); }
+}
+</script>
+</body>
+</html>
