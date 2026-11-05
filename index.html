@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dgtl FamPay Gateway</title>
+<title>Dgtl FamPay Gateway - Login</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -186,8 +186,204 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;background:rgba(7,11,20,.4);border-radius:16px;border:1px dashed var(--border);}
 .empty-state .icon{font-size:44px;margin-bottom:12px;opacity:.5;}
 
+/* ================= LOGIN LAYER ================= */
+#loginLayer{
+  position:fixed;inset:0;z-index:10000;
+  background:var(--bg);
+  display:flex;justify-content:center;align-items:center;
+  padding:16px;
+  background-image:
+    radial-gradient(circle at 15% 0%,rgba(91,140,255,.18),transparent 45%),
+    radial-gradient(circle at 85% 100%,rgba(139,92,246,.18),transparent 45%),
+    radial-gradient(circle at 50% 50%,rgba(16,217,160,.06),transparent 60%);
+  animation:fadeIn .5s ease-out;
+  overflow-y:auto;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+#loginLayer::before{
+  content:"";position:absolute;inset:-50%;
+  background:conic-gradient(from 0deg,transparent,rgba(91,140,255,.06),transparent 30%);
+  animation:spin 22s linear infinite;
+}
+.login-box{
+  width:100%;max-width:420px;
+  background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:24px;padding:32px 28px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);
+  position:relative;z-index:1;
+  animation:slideUp .6s cubic-bezier(.4,0,.2,1);
+  margin:auto;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{
+  width:56px;height:56px;border-radius:16px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  margin:0 auto 14px;
+  box-shadow:0 12px 32px rgba(91,140,255,.45);
+  animation:pop .6s cubic-bezier(.4,1.6,.6,1);
+}
+.login-box h2{
+  text-align:center;font-size:22px;font-weight:800;margin-bottom:4px;
+  background:linear-gradient(135deg,#fff,#93b4ff 60%,#c4a4ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.login-box .subtitle{
+  text-align:center;font-size:12.5px;color:var(--muted);margin-bottom:20px;
+}
+.login-box .form-group{margin-bottom:14px}
+.login-box label{font-size:12px;color:#c3d2ee;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.login-box input{
+  padding:12px 14px;font-size:13.5px;
+  border:1.5px solid rgba(99,152,255,.2);
+  background:rgba(7,11,20,.8);
+}
+.login-box input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(91,140,255,.18);
+}
+.login-btn{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;border:none;border-radius:12px;
+  font-weight:700;font-size:14px;cursor:pointer;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 10px 28px rgba(91,140,255,.4);
+  position:relative;overflow:hidden;
+  margin-top:4px;
+}
+.login-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 36px rgba(91,140,255,.55)}
+.login-btn:active:not(:disabled){transform:translateY(0)}
+.login-btn:disabled{opacity:.6;cursor:not-allowed}
+.login-btn.loading::after{
+  content:"";position:absolute;left:50%;top:50%;
+  width:20px;height:20px;margin:-10px 0 0 -10px;
+  border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+.login-btn.loading span{opacity:0}
+
+/* Auth tab switcher inside login */
+.auth-switch{
+  display:flex;gap:4px;padding:4px;
+  background:rgba(7,11,20,.6);
+  border:1px solid var(--border);
+  border-radius:12px;margin-bottom:20px;
+}
+.auth-switch button{
+  flex:1;padding:9px 8px;border:none;background:transparent;
+  color:var(--muted);font-size:12.5px;font-weight:600;
+  border-radius:9px;cursor:pointer;
+  transition:all .25s;font-family:inherit;
+}
+.auth-switch button.active{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;box-shadow:0 4px 14px rgba(91,140,255,.4);
+}
+.auth-switch button:hover:not(.active){color:var(--text)}
+
+/* Google Sign-In Button */
+.google-btn{
+  width:100%;padding:13px 14px;
+  background:#fff;color:#3c4043;
+  border:1.5px solid rgba(99,152,255,.25);
+  border-radius:12px;
+  font-weight:600;font-size:13.5px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 6px 18px rgba(0,0,0,.2);
+  position:relative;overflow:hidden;
+}
+.google-btn:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(0,0,0,.35);
+  background:#f8f9fa;
+}
+.google-btn:active:not(:disabled){transform:translateY(0)}
+.google-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.google-btn.loading::after{
+  content:"";position:absolute;left:50%;top:50%;
+  width:20px;height:20px;margin:-10px 0 0 -10px;
+  border:2px solid rgba(60,64,67,.2);border-top-color:#3c4043;
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+.google-btn.loading span,.google-btn.loading svg{opacity:0}
+.google-btn svg{width:18px;height:18px;flex-shrink:0}
+
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:16px 0;
+  color:var(--muted);font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.divider::before,.divider::after{
+  content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(99,152,255,.25),transparent);
+}
+
+.forgot-link{
+  text-align:right;
+  margin-top:-6px;margin-bottom:8px;
+}
+.forgot-link a{
+  color:#93b4ff;font-size:11.5px;text-decoration:none;
+  font-weight:600;transition:color .2s;
+}
+.forgot-link a:hover{color:#fff;text-decoration:underline}
+
+.login-footer{
+  text-align:center;font-size:11px;color:var(--muted);
+  margin-top:18px;line-height:1.7;
+}
+.login-footer .secure-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(16,217,160,.12);
+  border:1px solid rgba(16,217,160,.3);
+  color:var(--success);padding:5px 12px;border-radius:20px;
+  font-size:10.5px;font-weight:600;margin-bottom:8px;
+}
+.login-error{
+  background:rgba(244,63,94,.12);
+  border:1px solid rgba(244,63,94,.35);
+  color:var(--danger);
+  padding:10px 14px;border-radius:10px;
+  font-size:12px;margin-bottom:14px;
+  display:none;
+  animation:shake .4s ease-out;
+  line-height:1.5;
+}
+.login-error.show{display:block}
+.login-success{
+  background:rgba(16,217,160,.12);
+  border:1px solid rgba(16,217,160,.35);
+  color:var(--success);
+  padding:10px 14px;border-radius:10px;
+  font-size:12px;margin-bottom:14px;
+  display:none;
+  animation:fadeSlide .4s ease-out;
+  line-height:1.5;
+}
+.login-success.show{display:block}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* User chip after google login */
+.user-chip{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(16,217,160,.1);
+  border:1px solid rgba(16,217,160,.35);
+  border-radius:12px;padding:10px 14px;
+  margin-bottom:16px;
+}
+.user-chip img{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid rgba(16,217,160,.5);
+}
+.user-chip .chip-info{flex:1;min-width:0}
+.user-chip .chip-name{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-chip .chip-email{font-size:10.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 /* Toast */
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);background:rgba(20,30,52,.95);backdrop-filter:blur(20px);border:1px solid var(--border);padding:14px 22px;border-radius:12px;font-size:13px;font-weight:500;z-index:9999;transition:transform .4s cubic-bezier(.4,1.4,.6,1);box-shadow:0 16px 40px rgba(0,0,0,.5);max-width:90vw;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120%);background:rgba(20,30,52,.95);backdrop-filter:blur(20px);border:1px solid var(--border);padding:14px 22px;border-radius:12px;font-size:13px;font-weight:500;z-index:99999;transition:transform .4s cubic-bezier(.4,1.4,.6,1);box-shadow:0 16px 40px rgba(0,0,0,.5);max-width:90vw;}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.success{border-color:rgba(16,217,160,.4);color:var(--success)}
 .toast.error{border-color:rgba(244,63,94,.4);color:var(--danger)}
@@ -198,12 +394,113 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
   .tab{font-size:12px;padding:9px 6px}
   .order-row{flex-direction:column;align-items:flex-start;}
   .order-right{text-align:left;width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;border-top:1px dashed var(--border);padding-top:10px;margin-top:8px;}
+  .login-box{padding:28px 20px}
 }
 </style>
 </head>
 <body>
 
-<div class="container" id="mainContainer">
+<!-- ==================== LOGIN LAYER ==================== -->
+<div id="loginLayer">
+  <div class="login-box">
+    <div class="login-logo">⚡</div>
+    <h2 id="loginTitle">Welcome Back</h2>
+    <p class="subtitle" id="loginSubtitle">Sign in to continue to FamPay Gateway</p>
+
+    <!-- Google user chip (shown after Google sign-in) -->
+    <div class="user-chip hidden" id="googleUserChip">
+      <img id="googleUserAvatar" src="" alt="avatar">
+      <div class="chip-info">
+        <div class="chip-name" id="googleUserName">User</div>
+        <div class="chip-email" id="googleUserEmail">user@gmail.com</div>
+      </div>
+      <button onclick="signOutGoogle()" style="background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:16px;padding:4px" title="Sign out">✕</button>
+    </div>
+
+    <div class="login-error" id="loginError"></div>
+    <div class="login-success" id="loginSuccess"></div>
+
+    <!-- Auth mode switcher: Sign In / Sign Up -->
+    <div class="auth-switch">
+      <button type="button" class="active" id="tabSignIn" onclick="switchAuthMode('signin')">Sign In</button>
+      <button type="button" id="tabSignUp" onclick="switchAuthMode('signup')">Sign Up</button>
+    </div>
+
+    <!-- ============ SIGN IN FORM ============ -->
+    <form id="signInForm" onsubmit="handleSignIn(event)">
+      <div class="form-group">
+        <label>📧 Email <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="email" id="signInEmail" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:8px">
+        <label>🔒 Password <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="signInPassword" placeholder="Enter your password" autocomplete="current-password" required>
+        </div>
+      </div>
+      <div class="forgot-link">
+        <a href="#" onclick="handleForgotPassword(event)">Forgot password?</a>
+      </div>
+      <button type="submit" class="login-btn" id="signInBtn">
+        <span>Sign In →</span>
+      </button>
+    </form>
+
+    <!-- ============ SIGN UP FORM ============ -->
+    <form id="signUpForm" class="hidden" onsubmit="handleSignUp(event)">
+      <div class="form-group">
+        <label>👤 Full Name <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="text" id="signUpName" placeholder="Your full name" autocomplete="name" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>📧 Email <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="email" id="signUpEmail" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>🔒 New Password <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="signUpPassword" placeholder="Min 6 characters" autocomplete="new-password" minlength="6" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>🔒 Confirm Password <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="signUpConfirm" placeholder="Re-enter password" autocomplete="new-password" minlength="6" required>
+        </div>
+      </div>
+      <button type="submit" class="login-btn" id="signUpBtn">
+        <span>Create Account →</span>
+      </button>
+    </form>
+
+    <div class="divider">Or continue with</div>
+
+    <!-- Google Sign-In Button -->
+    <button type="button" class="google-btn" id="googleBtn" onclick="signInWithGoogle()">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+      </svg>
+      <span>Continue with Google</span>
+    </button>
+
+    <div class="login-footer">
+      <div class="secure-badge">🔒 100% Secure &amp; Encrypted</div>
+      <div>By continuing, you agree to our<br>Terms of Service &amp; Privacy Policy</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MAIN APP (hidden initially) ==================== -->
+<div class="container hidden" id="mainContainer">
   <div class="header">
     <div class="brand">
       <div class="brand-logo">⚡</div>
@@ -341,19 +638,336 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 
 <div class="toast" id="toast"></div>
 
+<!-- ==================== FIREBASE SDK (v10 Modular) ==================== -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  updateProfile,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// ============================================================
+// 🔥 REPLACE THIS with your Firebase project config
+// Firebase Console → Project Settings → Your apps → Config
+// ============================================================
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+
+// ---------- Google Sign-In ----------
+window.signInWithGoogle = async function () {
+  const btn = document.getElementById('googleBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  hideMessages();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        name: user.displayName || "User",
+        email: user.email,
+        photoURL: user.photoURL || "",
+        lastLogin: serverTimestamp(),
+        provider: "google"
+      }, { merge: true });
+    } catch (fsErr) {
+      console.warn("Firestore save failed:", fsErr.message);
+    }
+
+    showUserChip(user);
+    toast("✅ Google login successful! Welcome " + (user.displayName || user.email.split('@')[0]), "success");
+    proceedToApp(user.email);
+  } catch (err) {
+    console.error(err);
+    if (err.code === 'auth/popup-closed-by-user') {
+      toast("Login cancelled", "info");
+    } else if (err.code === 'auth/unauthorized-domain') {
+      showError("❌ This domain is not authorized in Firebase Auth. Add it in Firebase Console → Authentication → Settings → Authorized domains.");
+    } else {
+      showError("❌ " + (err.message || "Google sign-in failed"));
+    }
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+  }
+};
+
+window.signOutGoogle = async function () {
+  try {
+    await signOut(auth);
+    document.getElementById('googleUserChip').classList.add('hidden');
+    toast("Signed out", "info");
+  } catch (e) {
+    toast("❌ " + e.message, "error");
+  }
+};
+
+// ---------- Email/Password Sign Up ----------
+window.handleSignUp = async function (e) {
+  e.preventDefault();
+  hideMessages();
+
+  const name = document.getElementById('signUpName').value.trim();
+  const email = document.getElementById('signUpEmail').value.trim();
+  const pw = document.getElementById('signUpPassword').value;
+  const pwConfirm = document.getElementById('signUpConfirm').value;
+
+  if (!name) return showError("❌ Please enter your full name");
+  if (!email || !email.includes('@')) return showError("❌ Please enter a valid email");
+  if (pw.length < 6) return showError("❌ Password must be at least 6 characters");
+  if (pw !== pwConfirm) return showError("❌ Passwords do not match");
+
+  const btn = document.getElementById('signUpBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.querySelector('span').textContent = 'Creating account...';
+
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, pw);
+    const user = userCred.user;
+
+    // Set displayName
+    try {
+      await updateProfile(user, { displayName: name });
+    } catch (e) { console.warn("updateProfile failed", e); }
+
+    // Save to Firestore
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        name: name,
+        email: email,
+        photoURL: "",
+        createdAt: serverTimestamp(),
+        lastLogin: serverTimestamp(),
+        provider: "email"
+      }, { merge: true });
+    } catch (fsErr) {
+      console.warn("Firestore save failed:", fsErr.message);
+    }
+
+    toast("✅ Account created! Welcome " + name, "success");
+    btn.querySelector('span').textContent = '✓ Success!';
+    setTimeout(() => proceedToApp(email), 700);
+  } catch (err) {
+    console.error(err);
+    const msgs = {
+      'auth/email-already-in-use': '❌ This email is already registered. Try signing in.',
+      'auth/invalid-email': '❌ Invalid email address',
+      'auth/weak-password': '❌ Password is too weak (min 6 chars)',
+      'auth/operation-not-allowed': '❌ Email/Password sign-in not enabled in Firebase Console'
+    };
+    showError(msgs[err.code] || ('❌ ' + err.message));
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.querySelector('span').textContent = 'Create Account →';
+  }
+};
+
+// ---------- Email/Password Sign In ----------
+window.handleSignIn = async function (e) {
+  e.preventDefault();
+  hideMessages();
+
+  const email = document.getElementById('signInEmail').value.trim();
+  const pw = document.getElementById('signInPassword').value;
+
+  if (!email || !email.includes('@')) return showError("❌ Please enter a valid email");
+  if (!pw) return showError("❌ Please enter your password");
+
+  const btn = document.getElementById('signInBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.querySelector('span').textContent = 'Signing in...';
+
+  try {
+    const userCred = await signInWithEmailAndPassword(auth, email, pw);
+    const user = userCred.user;
+
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        lastLogin: serverTimestamp()
+      }, { merge: true });
+    } catch (fsErr) {
+      console.warn("Firestore update failed:", fsErr.message);
+    }
+
+    toast("✅ Signed in! Welcome back " + (user.displayName || email.split('@')[0]), "success");
+    btn.querySelector('span').textContent = '✓ Success!';
+    setTimeout(() => proceedToApp(email), 700);
+  } catch (err) {
+    console.error(err);
+    const msgs = {
+      'auth/user-not-found': '❌ No account found with this email. Please sign up first.',
+      'auth/wrong-password': '❌ Incorrect password. Try again or use "Forgot password?"',
+      'auth/invalid-credential': '❌ Invalid email or password',
+      'auth/invalid-email': '❌ Invalid email address',
+      'auth/too-many-requests': '❌ Too many attempts. Please wait a minute.',
+      'auth/user-disabled': '❌ This account has been disabled'
+    };
+    showError(msgs[err.code] || ('❌ ' + err.message));
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.querySelector('span').textContent = 'Sign In →';
+  }
+};
+
+// ---------- Forgot Password ----------
+window.handleForgotPassword = async function (e) {
+  e.preventDefault();
+  hideMessages();
+
+  const email = document.getElementById('signInEmail').value.trim();
+  if (!email || !email.includes('@')) {
+    return showError("❌ Enter your email above first, then click 'Forgot password?'");
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showSuccess("✅ Password reset link sent to " + email + ". Check your inbox (and spam).");
+  } catch (err) {
+    console.error(err);
+    const msgs = {
+      'auth/user-not-found': '❌ No account found with this email.',
+      'auth/invalid-email': '❌ Invalid email address',
+      'auth/too-many-requests': '❌ Too many attempts. Please wait a minute.'
+    };
+    showError(msgs[err.code] || ('❌ ' + err.message));
+  }
+};
+
+// ---------- Auth mode switch ----------
+window.switchAuthMode = function (mode) {
+  hideMessages();
+  const tabIn = document.getElementById('tabSignIn');
+  const tabUp = document.getElementById('tabSignUp');
+  const formIn = document.getElementById('signInForm');
+  const formUp = document.getElementById('signUpForm');
+  const title = document.getElementById('loginTitle');
+  const subtitle = document.getElementById('loginSubtitle');
+
+  if (mode === 'signup') {
+    tabUp.classList.add('active');
+    tabIn.classList.remove('active');
+    formUp.classList.remove('hidden');
+    formIn.classList.add('hidden');
+    title.textContent = 'Create Account';
+    subtitle.textContent = 'Sign up to get started with FamPay Gateway';
+  } else {
+    tabIn.classList.add('active');
+    tabUp.classList.remove('active');
+    formIn.classList.remove('hidden');
+    formUp.classList.add('hidden');
+    title.textContent = 'Welcome Back';
+    subtitle.textContent = 'Sign in to continue to FamPay Gateway';
+  }
+};
+
+// ---------- Helpers ----------
+function showError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById('loginSuccess').classList.remove('show');
+}
+function showSuccess(msg) {
+  const el = document.getElementById('loginSuccess');
+  el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById('loginError').classList.remove('show');
+}
+function hideMessages() {
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('loginSuccess').classList.remove('show');
+}
+window.showError = showError;
+window.showSuccess = showSuccess;
+
+function showUserChip(user) {
+  const chip = document.getElementById('googleUserChip');
+  document.getElementById('googleUserAvatar').src = user.photoURL || "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+  document.getElementById('googleUserName').textContent = user.displayName || "User";
+  document.getElementById('googleUserEmail').textContent = user.email;
+  chip.classList.remove('hidden');
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user && user.photoURL) showUserChip(user);
+});
+</script>
+
+<!-- ==================== MAIN APP LOGIC ==================== -->
 <script>
 let currentOrderId = "", currentApiKey = "";
 const API_BASE = "/api";
 
-// On Load: Check if API key is saved in localStorage
+function proceedToApp(email) {
+  localStorage.setItem('fampay_user_email', email);
+  localStorage.setItem('fampay_user_logged_in', 'true');
+
+  const layer = document.getElementById('loginLayer');
+  layer.style.transition = 'opacity 0.5s, transform 0.5s';
+  layer.style.opacity = '0';
+  layer.style.transform = 'scale(1.05)';
+
+  setTimeout(() => {
+    layer.classList.add('hidden');
+    document.getElementById('mainContainer').classList.remove('hidden');
+    document.getElementById('mainContainer').style.animation = 'fadeSlide 0.5s ease-out';
+
+    const savedKey = localStorage.getItem('fampay_api_key');
+    if (savedKey) {
+      document.getElementById('apiKey').value = savedKey;
+      document.getElementById('dashApiKey').value = savedKey;
+      switchTab('dashboard');
+      loadDashboard(true);
+    }
+  }, 500);
+}
+window.proceedToApp = proceedToApp;
+
 window.addEventListener('DOMContentLoaded', () => {
-  const savedKey = localStorage.getItem('fampay_api_key');
-  if (savedKey) {
-    document.getElementById('apiKey').value = savedKey;
-    document.getElementById('dashApiKey').value = savedKey;
-    // Auto switch to dashboard if key exists
-    switchTab('dashboard');
-    loadDashboard(true);
+  const isLoggedIn = localStorage.getItem('fampay_user_logged_in');
+  if (isLoggedIn === 'true') {
+    document.getElementById('loginLayer').classList.add('hidden');
+    document.getElementById('mainContainer').classList.remove('hidden');
+
+    const savedKey = localStorage.getItem('fampay_api_key');
+    if (savedKey) {
+      document.getElementById('apiKey').value = savedKey;
+      document.getElementById('dashApiKey').value = savedKey;
+      switchTab('dashboard');
+      loadDashboard(true);
+    }
   }
 });
 
@@ -364,18 +978,18 @@ function toast(msg, type = "info") {
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.className = 'toast', 4000);
 }
+window.toast = toast;
 
 function switchTab(t) {
   document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(x => x.classList.add('hidden'));
-  
+
   if (t === 'register') {
     document.querySelectorAll('.tab')[0].classList.add('active');
     document.getElementById('registerTab').classList.remove('hidden');
   } else if (t === 'payment') {
     document.querySelectorAll('.tab')[1].classList.add('active');
     document.getElementById('paymentTab').classList.remove('hidden');
-    // Auto-fill key if exists
     const savedKey = localStorage.getItem('fampay_api_key');
     if (savedKey && !document.getElementById('apiKey').value) {
       document.getElementById('apiKey').value = savedKey;
@@ -383,7 +997,7 @@ function switchTab(t) {
   } else if (t === 'dashboard') {
     document.querySelectorAll('.tab')[2].classList.add('active');
     document.getElementById('dashboardTab').classList.remove('hidden');
-    
+
     const savedKey = localStorage.getItem('fampay_api_key');
     if (savedKey) {
       document.getElementById('dashboardLogin').classList.add('hidden');
@@ -423,13 +1037,12 @@ async function registerUser() {
     if (data.status === 'success') {
       document.getElementById('generatedKey').innerText = data.api_key;
       document.getElementById('apiKeyResult').classList.remove('hidden');
-      
-      // Save to LocalStorage
+
       localStorage.setItem('fampay_api_key', data.api_key);
-      
+
       document.getElementById('apiKey').value = data.api_key;
       document.getElementById('dashApiKey').value = data.api_key;
-      
+
       toast("✅ Account Created! API Key Saved.", "success");
       setTimeout(() => switchTab('dashboard'), 1000);
     } else {
@@ -455,15 +1068,13 @@ async function createOrder() {
   if (!apiKey) return toast("API Key daalo!", "error");
   if (amount < 1) return toast("Minimum ₹1", "error");
 
-  // Auto-save if not saved
   localStorage.setItem('fampay_api_key', apiKey);
   currentApiKey = apiKey;
-  
+
   const btn = document.getElementById('createBtn');
   setLoading(btn, true, "Generating...");
 
   try {
-    // API Key passed in HEADER, not URL
     const res = await fetch(`${API_BASE}/create?amount=${amount}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey }
@@ -526,14 +1137,13 @@ function resetForm() {
   document.getElementById('amount').value = "10";
 }
 
-// ---------- DASHBOARD ----------
 async function loadDashboard(isAuto = false) {
   let apiKey = document.getElementById('dashApiKey').value.trim();
-  
+
   if (!apiKey) {
     apiKey = localStorage.getItem('fampay_api_key');
   }
-  
+
   if (!apiKey) return toast("API Key daalo!", "error");
 
   const btn = document.getElementById('dashBtn');
@@ -546,13 +1156,11 @@ async function loadDashboard(isAuto = false) {
     const data = await res.json();
 
     if (data.status === 'success') {
-      // Save key on successful login
       localStorage.setItem('fampay_api_key', apiKey);
-      
-      // UI Update
+
       document.getElementById('dashboardLogin').classList.add('hidden');
       document.getElementById('dashboardContent').classList.remove('hidden');
-      
+
       document.getElementById('userAvatar').textContent = (data.user.name || "U").charAt(0).toUpperCase();
       document.getElementById('userNameDisplay').textContent = data.user.name || "User";
       document.getElementById('userUpiDisplay').textContent = data.user.upi_id || "—";
@@ -575,7 +1183,7 @@ async function loadDashboard(isAuto = false) {
           const statusCls = o.status === 'paid' ? 'status-paid' : (o.status === 'expired' ? 'status-expired' : 'status-pending');
           const statusTxt = (o.status || 'pending').toUpperCase();
           const icon = o.status === 'paid' ? '✅' : (o.status === 'expired' ? '❌' : '⏳');
-          
+
           row.innerHTML = `
             <div class="order-icon">${icon}</div>
             <div class="order-info">
@@ -593,10 +1201,10 @@ async function loadDashboard(isAuto = false) {
           list.appendChild(row);
         });
       }
-      if(!isAuto) toast("✅ Dashboard Updated", "success");
+      if (!isAuto) toast("✅ Dashboard Updated", "success");
     } else {
       toast("❌ " + (data.message || "Invalid API Key"), "error");
-      if(!isAuto) logoutDashboard();
+      if (!isAuto) logoutDashboard();
     }
   } catch (e) {
     toast("❌ " + e.message, "error");
@@ -625,6 +1233,15 @@ function formatDate(iso) {
     });
   } catch { return iso; }
 }
+
+window.switchTab = switchTab;
+window.registerUser = registerUser;
+window.copyApiKey = copyApiKey;
+window.createOrder = createOrder;
+window.checkStatus = checkStatus;
+window.resetForm = resetForm;
+window.loadDashboard = loadDashboard;
+window.logoutDashboard = logoutDashboard;
 </script>
 </body>
-</html>
+                                               </html>
