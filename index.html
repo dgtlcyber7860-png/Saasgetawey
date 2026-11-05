@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dgtl FamPay Gateway - Login</title>
+<title>FamGateway - Login</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -186,12 +186,12 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 .empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;background:rgba(7,11,20,.4);border-radius:16px;border:1px dashed var(--border);}
 .empty-state .icon{font-size:44px;margin-bottom:12px;opacity:.5;}
 
-/* ================= LOGIN LAYER ================= */
+/* ================= LOGIN LAYER (FULL MODE / NO GAP) ================= */
 #loginLayer{
   position:fixed;inset:0;z-index:10000;
   background:var(--bg);
   display:flex;justify-content:center;align-items:center;
-  padding:16px;
+  padding:0; /* Gap hataya */
   background-image:
     radial-gradient(circle at 15% 0%,rgba(91,140,255,.18),transparent 45%),
     radial-gradient(circle at 85% 100%,rgba(139,92,246,.18),transparent 45%),
@@ -206,23 +206,33 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
   animation:spin 22s linear infinite;
 }
 .login-box{
-  width:100%;max-width:420px;
-  background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid var(--border);border-radius:24px;padding:32px 28px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);
+  width:100%;max-width:100%; /* Full width */
+  min-height:100vh; /* Full height */
+  background:transparent; /* Background hataya taaki body ka gradient dikhe */
+  border:none;
+  border-radius:0;
+  padding: 40px 20px; 
+  box-shadow:none;
   position:relative;z-index:1;
-  animation:slideUp .6s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;justify-content:center;
   margin:auto;
 }
-@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.login-logo{
-  width:56px;height:56px;border-radius:16px;
-  background:linear-gradient(135deg,var(--primary),var(--primary2));
-  display:flex;align-items:center;justify-content:center;font-size:28px;
-  margin:0 auto 14px;
-  box-shadow:0 12px 32px rgba(91,140,255,.45);
-  animation:pop .6s cubic-bezier(.4,1.6,.6,1);
+.login-box-inner{
+  width:100%;max-width:420px; /* Form ki width control ki */
+  margin:0 auto;
 }
+
+/* Naya Logo Style */
+.login-logo{
+  width:72px;height:72px;border-radius:22px;
+  background:linear-gradient(135deg, #6b4cf5, #9066fa);
+  display:flex;align-items:center;justify-content:center;font-size:36px;
+  margin:0 auto 18px;
+  box-shadow:0 12px 32px rgba(107,76,245,.45);
+  animation:pop .6s cubic-bezier(.4,1.6,.6,1);
+  color: #ffc107;
+}
+
 .login-box h2{
   text-align:center;font-size:22px;font-weight:800;margin-bottom:4px;
   background:linear-gradient(135deg,#fff,#93b4ff 60%,#c4a4ff);
@@ -282,10 +292,10 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 }
 .auth-switch button:hover:not(.active){color:var(--text)}
 
-/* Google Sign-In Button */
+/* Naya Google Button Style */
 .google-btn{
   width:100%;padding:13px 14px;
-  background:#fff;color:#3c4043;
+  background:transparent;color:#fff;
   border:1.5px solid rgba(99,152,255,.25);
   border-radius:12px;
   font-weight:600;font-size:13.5px;cursor:pointer;
@@ -297,7 +307,7 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 .google-btn:hover:not(:disabled){
   transform:translateY(-2px);
   box-shadow:0 10px 26px rgba(0,0,0,.35);
-  background:#f8f9fa;
+  background:rgba(255,255,255,.05);
 }
 .google-btn:active:not(:disabled){transform:translateY(0)}
 .google-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
@@ -394,7 +404,6 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
   .tab{font-size:12px;padding:9px 6px}
   .order-row{flex-direction:column;align-items:flex-start;}
   .order-right{text-align:left;width:100%;display:flex;flex-direction:row;justify-content:space-between;align-items:center;border-top:1px dashed var(--border);padding-top:10px;margin-top:8px;}
-  .login-box{padding:28px 20px}
 }
 </style>
 </head>
@@ -403,95 +412,108 @@ input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
 <!-- ==================== LOGIN LAYER ==================== -->
 <div id="loginLayer">
   <div class="login-box">
-    <div class="login-logo">⚡</div>
-    <h2 id="loginTitle">Welcome Back</h2>
-    <p class="subtitle" id="loginSubtitle">Sign in to continue to FamPay Gateway</p>
-
-    <div class="user-chip hidden" id="googleUserChip">
-      <img id="googleUserAvatar" src="" alt="avatar">
-      <div class="chip-info">
-        <div class="chip-name" id="googleUserName">User</div>
-        <div class="chip-email" id="googleUserEmail">user@gmail.com</div>
+    <div class="login-box-inner">
+      <!-- Naya Screenshot Wala Logo -->
+      <div class="login-logo">⚡</div>
+      
+      <!-- Naya Text Header -->
+      <div style="display:flex; justify-content:center; align-items:center; gap:6px; margin-bottom: 24px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" fill="transparent"/>
+          <path d="M7 12C7 10.3431 8.34315 9 10 9H18V11H10C9.44772 11 9 11.4477 9 12C9 12.5523 9.44772 13 10 13H17C18.6569 13 20 14.3431 20 16C20 17.6569 18.6569 19 17 19H9V17H17C17.5523 17 18 16.5523 18 16C18 15.4477 17.5523 15 17 15H10C8.34315 15 7 13.6569 7 12Z" fill="#5b8cff"/>
+          <path d="M11 4H6V6H11C11.5523 6 12 6.44772 12 7C12 7.55228 11.5523 8 11 8H4V10H11C12.6569 10 14 8.65685 14 7C14 5.34315 12.6569 4 11 4Z" fill="#5b8cff"/>
+        </svg>
+        <h2 style="margin:0; font-size: 20px; font-weight: 700; color: #fff; background: none; -webkit-text-fill-color: #fff;">Fam<span style="color:#5b8cff">Gateway</span><sup style="font-size: 10px; color:#5b8cff; font-weight:400; margin-left:2px;">™</sup></h2>
       </div>
-      <button onclick="signOutGoogle()" style="background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:16px;padding:4px" title="Sign out">✕</button>
-    </div>
 
-    <div class="login-error" id="loginError"></div>
-    <div class="login-success" id="loginSuccess"></div>
+      <h2 id="loginTitle" style="font-size: 18px; margin-top:10px; margin-bottom: 24px; color:#fff; background:none; -webkit-text-fill-color:#fff;">Welcome Back</h2>
 
-    <div class="auth-switch">
-      <button type="button" class="active" id="tabSignIn" onclick="switchAuthMode('signin')">Sign In</button>
-      <button type="button" id="tabSignUp" onclick="switchAuthMode('signup')">Sign Up</button>
-    </div>
-
-    <!-- SIGN IN FORM -->
-    <form id="signInForm" onsubmit="handleSignIn(event)">
-      <div class="form-group">
-        <label>📧 Email <span class="req">*</span></label>
-        <div class="input-wrap">
-          <input type="email" id="signInEmail" placeholder="you@example.com" autocomplete="email" required>
+      <div class="user-chip hidden" id="googleUserChip">
+        <img id="googleUserAvatar" src="" alt="avatar">
+        <div class="chip-info">
+          <div class="chip-name" id="googleUserName">User</div>
+          <div class="chip-email" id="googleUserEmail">user@gmail.com</div>
         </div>
+        <button onclick="signOutGoogle()" style="background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:16px;padding:4px" title="Sign out">✕</button>
       </div>
-      <div class="form-group" style="margin-bottom:8px">
-        <label>🔒 Password <span class="req">*</span></label>
-        <div class="input-wrap">
-          <input type="password" id="signInPassword" placeholder="Enter your password" autocomplete="current-password" required>
+
+      <div class="login-error" id="loginError"></div>
+      <div class="login-success" id="loginSuccess"></div>
+
+      <div class="auth-switch">
+        <button type="button" class="active" id="tabSignIn" onclick="switchAuthMode('signin')">Sign In</button>
+        <button type="button" id="tabSignUp" onclick="switchAuthMode('signup')">Sign Up</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <form id="signInForm" onsubmit="handleSignIn(event)">
+        <div class="form-group">
+          <label>📧 Email <span class="req">*</span></label>
+          <div class="input-wrap">
+            <input type="email" id="signInEmail" placeholder="you@example.com" autocomplete="email" required>
+          </div>
         </div>
-      </div>
-      <div class="forgot-link">
-        <a href="#" onclick="handleForgotPassword(event)">Forgot password?</a>
-      </div>
-      <button type="submit" class="login-btn" id="signInBtn">
-        <span>Sign In →</span>
+        <div class="form-group" style="margin-bottom:8px">
+          <label>🔒 Password <span class="req">*</span></label>
+          <div class="input-wrap">
+            <input type="password" id="signInPassword" placeholder="Enter your password" autocomplete="current-password" required>
+          </div>
+        </div>
+        <div class="forgot-link">
+          <a href="#" onclick="handleForgotPassword(event)">Forgot password?</a>
+        </div>
+        <button type="submit" class="login-btn" id="signInBtn">
+          <span>Sign In →</span>
+        </button>
+      </form>
+
+      <!-- SIGN UP FORM -->
+      <form id="signUpForm" class="hidden" onsubmit="handleSignUp(event)">
+        <div class="form-group">
+          <label>👤 Full Name <span class="req">*</span></label>
+          <div class="input-wrap">
+            <input type="text" id="signUpName" placeholder="Your full name" autocomplete="name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>📧 Email <span class="req">*</span></label>
+          <div class="input-wrap">
+            <input type="email" id="signUpEmail" placeholder="you@example.com" autocomplete="email" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>🔒 New Password <span class="req">*</span></label>
+          <div class="input-wrap">
+            <input type="password" id="signUpPassword" placeholder="Min 6 characters" autocomplete="new-password" minlength="6" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>🔒 Confirm Password <span class="req">*</span></label>
+          <div class="input-wrap">
+            <input type="password" id="signUpConfirm" placeholder="Re-enter password" autocomplete="new-password" minlength="6" required>
+          </div>
+        </div>
+        <button type="submit" class="login-btn" id="signUpBtn">
+          <span>Create Account →</span>
+        </button>
+      </form>
+
+      <div class="divider">Or continue with</div>
+
+      <button type="button" class="google-btn" id="googleBtn" onclick="signInWithGoogle()">
+        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        <span>Continue with Google</span>
       </button>
-    </form>
 
-    <!-- SIGN UP FORM -->
-    <form id="signUpForm" class="hidden" onsubmit="handleSignUp(event)">
-      <div class="form-group">
-        <label>👤 Full Name <span class="req">*</span></label>
-        <div class="input-wrap">
-          <input type="text" id="signUpName" placeholder="Your full name" autocomplete="name" required>
-        </div>
+      <div class="login-footer">
+        <div class="secure-badge">🔒 100% Secure &amp; Encrypted</div>
+        <div>By continuing, you agree to our<br>Terms of Service &amp; Privacy Policy</div>
       </div>
-      <div class="form-group">
-        <label>📧 Email <span class="req">*</span></label>
-        <div class="input-wrap">
-          <input type="email" id="signUpEmail" placeholder="you@example.com" autocomplete="email" required>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>🔒 New Password <span class="req">*</span></label>
-        <div class="input-wrap">
-          <input type="password" id="signUpPassword" placeholder="Min 6 characters" autocomplete="new-password" minlength="6" required>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>🔒 Confirm Password <span class="req">*</span></label>
-        <div class="input-wrap">
-          <input type="password" id="signUpConfirm" placeholder="Re-enter password" autocomplete="new-password" minlength="6" required>
-        </div>
-      </div>
-      <button type="submit" class="login-btn" id="signUpBtn">
-        <span>Create Account →</span>
-      </button>
-    </form>
-
-    <div class="divider">Or continue with</div>
-
-    <button type="button" class="google-btn" id="googleBtn" onclick="signInWithGoogle()">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-      </svg>
-      <span>Continue with Google</span>
-    </button>
-
-    <div class="login-footer">
-      <div class="secure-badge">🔒 100% Secure &amp; Encrypted</div>
-      <div>By continuing, you agree to our<br>Terms of Service &amp; Privacy Policy</div>
     </div>
   </div>
 </div>
@@ -870,14 +892,12 @@ window.switchAuthMode = function (mode) {
     formUp.classList.remove('hidden');
     formIn.classList.add('hidden');
     title.textContent = 'Create Account';
-    subtitle.textContent = 'Sign up to get started with FamPay Gateway';
   } else {
     tabIn.classList.add('active');
     tabUp.classList.remove('active');
     formIn.classList.remove('hidden');
     formUp.classList.add('hidden');
     title.textContent = 'Welcome Back';
-    subtitle.textContent = 'Sign in to continue to FamPay Gateway';
   }
 };
 
@@ -924,16 +944,13 @@ window.registerUserFirebase = async function () {
   btn.querySelector('span').textContent = "Saving to Firebase...";
 
   try {
-    // 1. Current logged-in user check
     const currentUser = auth.currentUser;
     if (!currentUser) {
       throw new Error("User not logged in. Please login again.");
     }
 
-    // 2. Ek nayi API Key generate karo (e.g. fp_live_xxxxx)
     const apiKey = 'fp_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
-    // 3. Data Firestore me save karo (user ki uid ke andar)
     await setDoc(doc(db, "users", currentUser.uid), {
       api_key: apiKey,
       business_name: name,
@@ -943,7 +960,6 @@ window.registerUserFirebase = async function () {
       registered_at: serverTimestamp()
     }, { merge: true });
 
-    // 4. UI Update karo
     document.getElementById('generatedKey').innerText = apiKey;
     document.getElementById('apiKeyResult').classList.remove('hidden');
     localStorage.setItem('fampay_api_key', apiKey);
@@ -952,7 +968,6 @@ window.registerUserFirebase = async function () {
 
     toast("✅ Account Saved! API Key Generated.", "success");
 
-    // 5. Dashboard pe switch karo
     setTimeout(() => switchTab('dashboard'), 1000);
     
   } catch (error) {
@@ -1143,7 +1158,6 @@ function resetForm() {
   document.getElementById('amount').value = "10";
 }
 
-// Dashboard API logic (Backend ki zaroorat hai iske liye)
 async function loadDashboard(isAuto = false) {
   let apiKey = document.getElementById('dashApiKey').value.trim();
 
@@ -1242,7 +1256,7 @@ function formatDate(iso) {
 }
 
 window.switchTab = switchTab;
-window.registerUser = window.registerUserFirebase; // Button ab Firebase wala function call karega
+window.registerUser = window.registerUserFirebase;
 window.copyApiKey = copyApiKey;
 window.createOrder = createOrder;
 window.checkStatus = checkStatus;
@@ -1251,4 +1265,4 @@ window.loadDashboard = loadDashboard;
 window.logoutDashboard = logoutDashboard;
 </script>
 </body>
-  </html>
+</html>
